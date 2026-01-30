@@ -16,16 +16,35 @@ const colors = {
   accent: '#e0f2fe',
 };
 
-// Helper: Bildanzahl extrahieren
-const getImageCountText = (packageName: string): string => {
+// HELPER: Holt die reine Bilderanzahl
+const getImageCountText = (packageName: string, packageImages?: number): string => {
+  // 1. Priorität: Wenn die Zahl direkt in den Daten liegt
+  if (packageImages && packageImages > 0) {
+    return `${packageImages} Bilder`;
+  }
+
+  // 2. Priorität: Suche nach einer Zahl im Namen (z.B. "10 Bilder Paket")
   const match = packageName.match(/(\d+)/);
   if (match) {
-    return `${match[1]} Bilder für Ihr Portfolio`;
+    return `${match[1]} Bilder`;
   }
-  return packageName;
+
+  // 3. Priorität: Feste Zuordnungen für Namen ohne Zahlen
+  const mappings: Record<string, string> = {
+    'Home S': '6 Bilder',
+    'Home M': '10 Bilder',
+    'Home L': '15 Bilder',
+    'Home XL': '20 Bilder',
+    'Exklusiv': '25 Bilder', // Beispielwert für Exklusiv-Pakete
+  };
+
+  for (const [key, value] of Object.entries(mappings)) {
+    if (packageName.includes(key)) return value;
+  }
+
+  return packageName; 
 };
 
-// Helper: Shooting-Art formatieren
 const formatShootingType = (type: string): string => {
   if (!type) return '';
   const lower = type.toLowerCase();
@@ -189,7 +208,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </Text>
         </View>
 
-        {/* Projektdaten */}
+        {/* Projektdaten - KORRIGIERT */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdaten im Überblick</Text>
           <View style={styles.projectGrid}>
@@ -206,7 +225,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Leistungsumfang</Text>
-                <Text style={styles.projectValue}>{portfolioText}</Text>
+                <Text style={styles.projectValue}>{imageCountText}</Text>
               </View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Geplante Dauer</Text>
