@@ -14,6 +14,12 @@ const colors = {
   white: '#ffffff',
 };
 
+// Hilfsfunktion zur Formatierung der Anrede
+const formatSalutation = (salutation: string) => {
+  if (!salutation) return '';
+  return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
+};
+
 const styles = StyleSheet.create({
   page: {
     padding: 50,
@@ -29,8 +35,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   logo: {
-    width: 160,
-    height: 36,
+    width: 140, // Breite beibehalten
+    height: 'auto', // Höhe auf auto für richtige Perspektive
+    objectFit: 'contain',
   },
   badge: {
     backgroundColor: '#f0f4f8',
@@ -70,22 +77,27 @@ const styles = StyleSheet.create({
   },
   projectCard: {
     backgroundColor: colors.lightBg,
-    padding: 20,
+    padding: 15, // Etwas kompakter
     borderRadius: 8,
     marginBottom: 20,
   },
   projectTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 12,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   projectRow: {
     flexDirection: 'row',
-    marginBottom: 6,
+    justifyContent: 'space-between', // Links-Rechts Darstellung
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.05)',
+    paddingVertical: 4,
   },
   projectLabel: {
-    width: 100,
+    width: 80, // Kleinerer Abstand durch definierte Breite
     fontSize: 9,
     color: colors.muted,
   },
@@ -93,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 9,
     fontWeight: 'bold',
+    textAlign: 'right', // Rechtsbündig für Tabellen-Look
   },
   section: {
     marginBottom: 20,
@@ -198,7 +211,9 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
     'Blaue-Himmel-Garantie',
   ];
   
-  // Calculate pricing values with fallbacks
+  const salutation = formatSalutation(data.contact.salutation);
+  
+  // Calculate pricing values
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
   const upgradesTotal = data.pricing.upgradesTotal ?? 0;
@@ -221,7 +236,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
             <Text style={styles.recipientText}>{data.contact.company}</Text>
           )}
           <Text style={styles.recipientText}>
-            {data.contact.salutation} {data.contact.firstName} {data.contact.lastName}
+            {salutation} {data.contact.firstName} {data.contact.lastName}
           </Text>
           {data.contact.street && (
             <Text style={styles.recipientText}>{data.contact.street}</Text>
@@ -235,7 +250,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr individuelles Angebot</Text>
           <Text style={styles.greeting}>
-            Guten Tag {data.contact.salutation} {data.contact.lastName},
+            Guten Tag {salutation} {data.contact.lastName},
           </Text>
           <Text style={styles.intro}>
             vielen Dank für Ihr Interesse an unseren professionellen Immobilienfotografie-Leistungen. 
@@ -246,27 +261,32 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         {/* Project Card */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdetails</Text>
+          
           <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Objekt:</Text>
+            <Text style={styles.projectLabel}>Objekt</Text>
             <Text style={styles.projectValue}>{data.project.address}</Text>
           </View>
+          
           <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Leistung:</Text>
+            <Text style={styles.projectLabel}>Leistung</Text>
             <Text style={styles.projectValue}>{data.project.shootingType}</Text>
           </View>
+          
           <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Paket:</Text>
+            <Text style={styles.projectLabel}>Paket</Text>
             <Text style={styles.projectValue}>{data.project.packageName}</Text>
           </View>
+          
           {imageCount > 0 && (
             <View style={styles.projectRow}>
-              <Text style={styles.projectLabel}>Bildanzahl:</Text>
+              <Text style={styles.projectLabel}>Bildanzahl</Text>
               <Text style={styles.projectValue}>{imageCount} Bilder</Text>
             </View>
           )}
+          
           {data.project.packageDuration && (
             <View style={styles.projectRow}>
-              <Text style={styles.projectLabel}>Dauer:</Text>
+              <Text style={styles.projectLabel}>Dauer</Text>
               <Text style={styles.projectValue}>{data.project.packageDuration}</Text>
             </View>
           )}
