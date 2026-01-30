@@ -16,35 +16,22 @@ const colors = {
   accent: '#e0f2fe',
 };
 
-// Helper: Get image count text from package name
+// Helper: Bildanzahl extrahieren
 const getImageCountText = (packageName: string): string => {
-  const match = packageName.match(/(\d+)\s*Bild/i);
+  const match = packageName.match(/(\d+)/);
   if (match) {
     return `${match[1]} Bilder für Ihr Portfolio`;
-  }
-  // Fallback mappings
-  const mappings: Record<string, string> = {
-    'Home S': '6 Bilder für Ihr Portfolio',
-    'Home M': '10 Bilder für Ihr Portfolio',
-    'Home L': '15 Bilder für Ihr Portfolio',
-    'Home XL': '20 Bilder für Ihr Portfolio',
-  };
-  for (const [key, value] of Object.entries(mappings)) {
-    if (packageName.includes(key)) return value;
   }
   return packageName;
 };
 
-// Helper: Get full salutation (Sehr geehrter Herr / Sehr geehrte Frau)
-const getFullSalutation = (salutation: string): string => {
-  const sal = getSalutationDisplay(salutation);
-  return sal === 'Frau' ? 'Sehr geehrte Frau' : 'Sehr geehrter Herr';
-};
-
+// Helper: Shooting-Art formatieren
 const formatShootingType = (type: string): string => {
   if (!type) return '';
-  const cleaned = type.replace(/-shooting$/i, '').replace(/-/g, ' ');
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase() + '-Shooting';
+  const lower = type.toLowerCase();
+  if (lower.includes('kombi')) return 'Immobilien-Shooting & Drohne (Kombi)';
+  if (lower.includes('drohne') || lower.includes('drone')) return 'Drohnen-Shooting';
+  return 'Immobilien-Shooting';
 };
 
 const styles = StyleSheet.create({
@@ -63,57 +50,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 35,
   },
-  logo: {
-    width: 100,
-    height: 'auto',
-    objectFit: 'contain',
-  },
-  headerRight: {
-    alignItems: 'flex-end',
-  },
-  dateText: {
-    fontSize: 8,
-    color: colors.muted,
-    marginBottom: 2,
-  },
-  offerNumber: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginBottom: 5,
-  },
-  badge: {
-    backgroundColor: colors.accent,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-  },
-  badgeText: {
-    fontSize: 7,
-    fontWeight: 'bold',
-    color: colors.primary,
-    textTransform: 'uppercase',
-  },
-  recipient: {
-    marginBottom: 30,
-  },
-  recipientText: {
-    fontSize: 9,
-    lineHeight: 1.4,
-  },
-  title: {
-    marginBottom: 20,
-  },
-  h1: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  greetingText: {
-    fontSize: 10,
-    lineHeight: 1.5,
-  },
+  logo: { width: 100, height: 'auto', objectFit: 'contain' },
+  headerRight: { alignItems: 'flex-end' },
+  dateText: { fontSize: 8, color: colors.muted, marginBottom: 2 },
+  offerNumber: { fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 5 },
+  badge: { backgroundColor: colors.accent, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
+  badgeText: { fontSize: 7, fontWeight: 'bold', color: colors.primary, textTransform: 'uppercase' },
+  recipient: { marginBottom: 30 },
+  recipientText: { fontSize: 9, lineHeight: 1.4 },
+  title: { marginBottom: 20 },
+  h1: { fontSize: 18, fontWeight: 'bold', color: colors.primary, marginBottom: 8 },
+  greetingText: { fontSize: 10, lineHeight: 1.5 },
   projectCard: {
     borderLeftWidth: 2,
     borderLeftColor: colors.primary,
@@ -129,30 +76,12 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  projectGrid: {
-    flexDirection: 'row',
-  },
-  projectColumn: {
-    flex: 1,
-  },
-  projectItem: {
-    marginBottom: 8,
-  },
-  // GRÖSSERE Labels (von 7 auf 8, mit bold)
-  projectLabel: {
-    fontSize: 8,
-    fontWeight: 'bold',
-    color: colors.muted,
-    textTransform: 'uppercase',
-    marginBottom: 2,
-  },
-  projectValue: {
-    fontSize: 9,
-    fontWeight: 'bold',
-  },
-  section: {
-    marginBottom: 20,
-  },
+  projectGrid: { flexDirection: 'row' },
+  projectColumn: { flex: 1 },
+  projectItem: { marginBottom: 8 },
+  projectLabel: { fontSize: 8, fontWeight: 'bold', color: colors.muted, textTransform: 'uppercase', marginBottom: 2 },
+  projectValue: { fontSize: 9, fontWeight: 'bold' },
+  section: { marginBottom: 20 },
   sectionTitle: {
     fontSize: 10,
     fontWeight: 'bold',
@@ -162,25 +91,10 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
     paddingBottom: 4,
   },
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '50%',
-    marginBottom: 5,
-  },
-  bullet: {
-    width: 3,
-    height: 3,
-    backgroundColor: colors.primary,
-    marginRight: 8,
-  },
-  featureText: {
-    fontSize: 8.5,
-  },
+  featuresGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  featureItem: { flexDirection: 'row', alignItems: 'center', width: '50%', marginBottom: 5 },
+  bullet: { width: 3, height: 3, backgroundColor: colors.primary, marginRight: 8 },
+  featureText: { fontSize: 8.5 },
   flexibilityNote: {
     backgroundColor: '#eff6ff',
     padding: 10,
@@ -189,56 +103,16 @@ const styles = StyleSheet.create({
     borderLeftWidth: 2,
     borderLeftColor: '#3b82f6',
   },
-  flexibilityText: {
-    fontSize: 8,
-    color: '#1e40af',
-  },
-  pricingBox: {
-    backgroundColor: colors.primary,
-    padding: 18,
-    borderRadius: 6,
-    marginBottom: 20,
-  },
-  pricingTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: colors.white,
-    marginBottom: 12,
-  },
-  pricingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-  },
-  pricingLabel: {
-    fontSize: 8.5,
-    color: 'rgba(255,255,255,0.7)',
-  },
-  pricingValue: {
-    fontSize: 8.5,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
-  pricingDivider: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    marginVertical: 10,
-  },
-  totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  totalLabel: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
-  totalValue: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
+  flexibilityText: { fontSize: 8, color: '#1e40af' },
+  pricingBox: { backgroundColor: colors.primary, padding: 18, borderRadius: 6, marginBottom: 20 },
+  pricingTitle: { fontSize: 11, fontWeight: 'bold', color: colors.white, marginBottom: 12 },
+  pricingRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 },
+  pricingLabel: { fontSize: 8.5, color: 'rgba(255,255,255,0.7)' },
+  pricingValue: { fontSize: 8.5, fontWeight: 'bold', color: colors.white },
+  pricingDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.15)', marginVertical: 10 },
+  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  totalLabel: { fontSize: 11, fontWeight: 'bold', color: colors.white },
+  totalValue: { fontSize: 14, fontWeight: 'bold', color: colors.white },
   footer: {
     position: 'absolute',
     bottom: 30,
@@ -248,17 +122,8 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     paddingTop: 10,
   },
-  footerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 6.5,
-    color: colors.muted,
-    flex: 1,
-    lineHeight: 1.4,
-  },
+  footerContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  footerText: { fontSize: 6.5, color: colors.muted, flex: 1, lineHeight: 1.4 },
 });
 
 interface Props {
@@ -266,20 +131,28 @@ interface Props {
 }
 
 export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
-  // Preise zusammenführen: Paketpreis + Anfahrt = ein Posten
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
   const combinedPackagePrice = packagePrice + travelCost;
   
-  // Bilderanzahl-Text statt Paketname
   const portfolioText = getImageCountText(data.project.packageName);
-  
-  // Korrekte Anrede
-  const fullSalutation = getFullSalutation(data.contact.salutation);
   const salutationDisplay = getSalutationDisplay(data.contact.salutation);
-  
-  // Adresse bereinigen (ohne Germany/Deutschland)
-  const cleanedAddress = cleanAddress(data.project.address);
+  const fullSalutation = salutationDisplay === 'Frau' ? 'Sehr geehrte Frau' : 'Sehr geehrter Herr';
+
+  // Check für 24h Express
+  const hasExpress = data.upgrades?.some(u => 
+    u.name.toLowerCase().includes('24h') || u.name.toLowerCase().includes('express')
+  );
+  const deliveryLabel = hasExpress ? 'Lieferung in 24h' : 'Lieferung in 48h';
+
+  const features = [
+    'Prof. Bildbearbeitung',
+    'Blauer-Himmel-Garantie',
+    'Kommerzielle Nutzungsrechte',
+    'High-Res Download',
+    'ImmoScout Optimierung',
+    deliveryLabel
+  ];
 
   return (
     <Document>
@@ -306,32 +179,33 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           )}
         </View>
 
-        {/* Titel & Anrede - KORRIGIERT */}
+        {/* Titel & Anrede mit gewünschtem Absatz */}
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr persönliches Angebot</Text>
           <Text style={styles.greetingText}>
-            {fullSalutation} {data.contact.lastName},{'\n'}
-            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner. Basierend auf Ihren Angaben haben wir folgendes Angebot für Sie erstellt:
+            {fullSalutation} {data.contact.lastName},{'\n\n'}
+            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner.{'\n\n'}
+            Basierend auf Ihren Angaben haben wir folgendes Angebot für Sie erstellt:
           </Text>
         </View>
 
-        {/* Projektdaten - mit Bilderanzahl statt Paketname */}
+        {/* Projektdaten */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdaten im Überblick</Text>
           <View style={styles.projectGrid}>
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Objektadresse</Text>
-                <Text style={styles.projectValue}>{cleanedAddress}</Text>
+                <Text style={styles.projectValue}>{cleanAddress(data.project.address)}</Text>
               </View>
               <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Leistungsumfang</Text>
+                <Text style={styles.projectLabel}>Shooting-Art</Text>
                 <Text style={styles.projectValue}>{formatShootingType(data.project.shootingType)}</Text>
               </View>
             </View>
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Gewähltes Portfolio</Text>
+                <Text style={styles.projectLabel}>Leistungsumfang</Text>
                 <Text style={styles.projectValue}>{portfolioText}</Text>
               </View>
               <View style={styles.projectItem}>
@@ -346,7 +220,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inklusivleistungen & Standards</Text>
           <View style={styles.featuresGrid}>
-            {['Prof. Bildbearbeitung', 'Blauer-Himmel-Garantie', 'Kommerzielle Nutzungsrechte', 'High-Res Download', 'ImmoScout Optimierung', 'Lieferung in 48h'].map((f, i) => (
+            {features.map((f, i) => (
               <View key={i} style={styles.featureItem}>
                 <View style={styles.bullet} />
                 <Text style={styles.featureText}>{f}</Text>
@@ -360,18 +234,16 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         </View>
 
-        {/* Kostenübersicht - KORRIGIERT: Paket+Anfahrt zusammen, Upgrades einzeln */}
+        {/* Kostenübersicht */}
         <View style={styles.pricingBox} wrap={false}>
           <Text style={styles.pricingTitle}>Kostenübersicht</Text>
           
-          {/* Paketpreis + Anfahrt kombiniert */}
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>{data.project.packageName} (inkl. Anfahrt)</Text>
             <Text style={styles.pricingValue}>{formatCurrency(combinedPackagePrice)}</Text>
           </View>
           
-          {/* Alle Upgrades einzeln auflisten */}
-          {data.upgrades && data.upgrades.length > 0 && data.upgrades.map((upgrade, index) => (
+          {data.upgrades?.map((upgrade, index) => (
             <View key={index} style={styles.pricingRow}>
               <Text style={styles.pricingLabel}>{upgrade.name}</Text>
               <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
@@ -380,14 +252,13 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           
           <View style={styles.pricingDivider} />
           
-          {/* Netto/MwSt/Brutto mit korrekter Formatierung */}
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>Netto Gesamt</Text>
             <Text style={styles.pricingValue}>{formatPriceString(data.pricing.netPrice)}</Text>
           </View>
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>MwSt. 19%</Text>
-            <Text style={styles.pricingValue}>{formatPriceString(data.pricing.vatAmount || '')}</Text>
+            <Text style={styles.pricingValue}>{formatPriceString(data.pricing.vatAmount || '0')}</Text>
           </View>
           <View style={styles.pricingDivider} />
           <View style={styles.totalRow}>
