@@ -19,11 +19,10 @@ const formatSalutation = (salutation: string) => {
   return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
 };
 
-// NEU: Shooting-Typ formatieren (z.B. "immobilien" → "Immobilien-Shooting")
-const formatShootingType = (type: string) => {
+const formatShootingType = (type: string): string => {
   if (!type) return '';
   const cleaned = type.replace(/-shooting$/i, '').replace(/-/g, ' ');
-  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
   return `${capitalized}-Shooting`;
 };
 
@@ -47,6 +46,14 @@ const styles = StyleSheet.create({
     width: 110,
     height: 'auto',
     objectFit: 'contain',
+  },
+  headerRight: {
+    alignItems: 'flex-end',
+  },
+  dateText: {
+    fontSize: 9,
+    color: colors.text,
+    marginBottom: 4,
   },
   badge: {
     backgroundColor: '#f0f4f8',
@@ -75,15 +82,14 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginBottom: 10,
   },
-  greeting: {
+  // FIX: Einheitliche Textfarbe und Font für Greeting
+  greetingText: {
     fontSize: 10,
-    marginBottom: 8,
+    color: colors.text, // Schwarz statt unterschiedliche Farben
+    lineHeight: 1.5,
+    marginBottom: 4,
   },
-  intro: {
-    fontSize: 9,
-    color: colors.muted,
-    lineHeight: 1.4,
-  },
+  // Projekt-Grid
   projectCard: {
     backgroundColor: colors.lightBg,
     padding: 12,
@@ -104,16 +110,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   projectItem: {
-    marginBottom: 4,
+    marginBottom: 6, // FIX: +15% mehr Abstand (war 4, jetzt ~5-6)
   },
   projectLabel: {
     fontSize: 8,
     color: colors.muted,
+    marginBottom: 2, // FIX: Kleiner Abstand zwischen Label und Value
   },
   projectValue: {
     fontSize: 9,
     fontWeight: 'bold',
   },
+  // Leistungen-Grid
   section: {
     marginBottom: 15,
   },
@@ -146,6 +154,7 @@ const styles = StyleSheet.create({
   featureText: {
     fontSize: 8.5,
   },
+  // Preis-Box
   pricingBox: {
     backgroundColor: colors.primary,
     padding: 15,
@@ -214,12 +223,13 @@ interface Props {
 }
 
 export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
+  const today = new Date();
   const validUntil = new Date();
   validUntil.setDate(validUntil.getDate() + 30);
   
-  // NEU: Features aus Paketdaten oder Fallback
-  const features = data.project.packageFeatures && data.project.packageFeatures.length > 0
-    ? data.project.packageFeatures
+  // FIX: Dynamische Features aus Paketdaten, Fallback nur wenn leer
+  const features = data.project.packageFeatures?.length 
+    ? data.project.packageFeatures 
     : [
         'Kommerzielle Nutzungsrechte',
         'Bildoptimierung',
@@ -230,6 +240,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
       ];
   
   const salutation = formatSalutation(data.contact.salutation);
+  const shootingType = formatShootingType(data.project.shootingType);
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
   const imageCount = data.project.imageCount ?? data.project.packageImages ?? 0;
@@ -237,11 +248,14 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {/* Header mit Datum */}
         <View style={styles.header}>
           <Image src={LOGO_URL} style={styles.logo} />
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>Gültig bis {formatDate(validUntil)}</Text>
+          <View style={styles.headerRight}>
+            <Text style={styles.dateText}>{formatDate(today)}</Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>Gültig bis {formatDate(validUntil)}</Text>
+            </View>
           </View>
         </View>
 
@@ -253,11 +267,11 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           {data.contact.zipCode && <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>}
         </View>
 
-        {/* Title & Greeting */}
+        {/* Title & Greeting - FIX: Einheitliche Formatierung */}
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr individuelles Angebot</Text>
-          <Text style={styles.greeting}>Guten Tag {salutation} {data.contact.lastName},</Text>
-          <Text style={styles.intro}>
+          <Text style={styles.greetingText}>
+            Guten Tag {salutation} {data.contact.lastName},{'\n'}
             vielen Dank für Ihr Interesse. Gerne unterbreiten wir Ihnen folgendes Angebot:
           </Text>
         </View>
@@ -273,8 +287,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
               </View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Leistung</Text>
-                {/* NEU: Shooting-Typ richtig formatiert */}
-                <Text style={styles.projectValue}>{formatShootingType(data.project.shootingType)}</Text>
+                <Text style={styles.projectValue}>{shootingType}</Text>
               </View>
             </View>
             <View style={styles.projectColumn}>
@@ -298,7 +311,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         </View>
 
-        {/* Inklusivleistungen - jetzt aus Paketdaten */}
+        {/* Inklusivleistungen - dynamisch aus Paketdaten */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inklusivleistungen</Text>
           <View style={styles.featuresGrid}>
@@ -326,24 +339,20 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         )}
 
-        {/* Preis-Box - NEU: Extras einzeln aufgelistet */}
+        {/* FIX: Titel geändert zu "Kostenaufstellung für Ihr Shooting" */}
         <View style={styles.pricingBox} wrap={false}>
-          <Text style={styles.pricingTitle}>Ihre Investition</Text>
-          
-          {/* Paketpreis inkl. Anfahrt */}
+          <Text style={styles.pricingTitle}>Kostenaufstellung für Ihr Shooting</Text>
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>{data.project.packageName} {travelCost > 0 ? '(inkl. Anfahrt)' : ''}</Text>
             <Text style={styles.pricingValue}>{formatCurrency(packagePrice + travelCost)}</Text>
           </View>
-          
-          {/* NEU: Jedes Upgrade als einzelner Posten */}
+          {/* Einzelne Upgrades mit Preisen */}
           {data.upgrades.map((upgrade, index) => (
             <View key={index} style={styles.pricingRow}>
               <Text style={styles.pricingLabel}>{upgrade.name}</Text>
               <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
             </View>
           ))}
-          
           <View style={styles.pricingDivider} />
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>Netto</Text>
