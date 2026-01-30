@@ -183,8 +183,8 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr persönliches Angebot</Text>
           <Text style={styles.greetingText}>
-            {fullSalutation} {data.contact.lastName},{'\n\n'}
-            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner.{'\n\n'}
+            {fullSalutation} {data.contact.lastName},<br>
+            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner.<br>
             Basierend auf Ihren Angaben haben wir folgendes Angebot für Sie erstellt:
           </Text>
         </View>
