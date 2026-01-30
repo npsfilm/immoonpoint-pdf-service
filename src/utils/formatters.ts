@@ -1,13 +1,14 @@
 /**
+ * Utility formatters for PDF generation
+ * All price formatting uses German locale (comma decimal, € suffix)
+ */
+
+/**
  * Format a number as German currency (EUR)
+ * e.g., 249 → "249,00 €"
  */
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
+  return amount.toFixed(2).replace('.', ',') + ' €';
 };
 
 /**
@@ -23,6 +24,28 @@ export const formatPrice = (price: number): string => {
  */
 export const formatGermanPrice = (price: number): string => {
   return price.toFixed(2).replace('.', ',');
+};
+
+/**
+ * Format a pre-formatted price string to German notation with € symbol
+ * Handles strings like "296.31" → "296,31 €"
+ * Also handles strings that may already have € or be in German format
+ */
+export const formatPriceString = (priceStr: string): string => {
+  if (!priceStr) return '0,00 €';
+  
+  // Remove existing € symbol and trim
+  let cleaned = priceStr.replace(/€/g, '').trim();
+  
+  // Replace dot with comma for German format
+  cleaned = cleaned.replace('.', ',');
+  
+  // Ensure € symbol is at the end
+  if (!cleaned.includes('€')) {
+    cleaned = cleaned + ' €';
+  }
+  
+  return cleaned;
 };
 
 /**
@@ -78,11 +101,8 @@ export const extractCity = (address: string): string => {
   
   const parts = address.split(',').map(part => part.trim());
   
-  // Usually format is: Street, Postal City, Country
-  // We want the city part (second to last)
   if (parts.length >= 2) {
     const cityPart = parts[parts.length - 2];
-    // Remove postal code if present (e.g., "12345 Berlin" -> "Berlin")
     const cityMatch = cityPart.match(/\d{5}\s+(.+)/);
     if (cityMatch && cityMatch[1]) {
       return cityMatch[1].trim();
@@ -109,7 +129,6 @@ export const getSalutationDisplay = (salutation: string): string => {
     return 'Herr';
   }
   
-  // Default to Herr if nothing matches
   return 'Herr';
 };
 
@@ -122,7 +141,7 @@ export const generateOfferNumber = (): string => {
   const year = now.getFullYear().toString().slice(-2);
   const month = (now.getMonth() + 1).toString().padStart(2, '0');
   const day = now.getDate().toString().padStart(2, '0');
-  const random = Math.floor(Math.random() * 900) + 100; // 100-999
+  const random = Math.floor(Math.random() * 900) + 100;
   
   return `IOP-${year}${month}${day}-${random}`;
 };
