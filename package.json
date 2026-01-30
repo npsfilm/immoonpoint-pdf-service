@@ -1,7 +1,6 @@
 {
   "name": "immoonpoint-pdf-service",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "esbuild src/server.ts --bundle --platform=node --target=node20 --outfile=dist/server.js --packages=external",
