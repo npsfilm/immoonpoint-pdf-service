@@ -203,8 +203,14 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr persönliches Angebot</Text>
           <Text style={styles.greetingText}>
-            {fullSalutation} {data.contact.lastName},<br>
-            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner.<br>
+            {fullSalutation} {data.contact.lastName},
+          </Text>
+          {/* Ein leerer Text-Block oder ein Margin sorgt für den Zeilenumbruch/Abstand */}
+          <View style={{ marginBottom: 8 }} /> 
+          <Text style={styles.greetingText}>
+            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner.
+          </Text>
+          <Text style={styles.greetingText}>
             Basierend auf Ihren Angaben haben wir folgendes Angebot für Sie erstellt:
           </Text>
         </View>
