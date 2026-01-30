@@ -1,35 +1,40 @@
-export const formatPrice = (price: string | number): string => {
-  const num = typeof price === "string" ? parseFloat(price) : price;
-  return num.toLocaleString("de-DE", {
+/**
+ * Format a number as German currency (€)
+ * @param amount - The amount to format
+ * @returns Formatted string like "1.234,56 €"
+ */
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('de-DE', {
+    style: 'currency',
+    currency: 'EUR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  });
+  }).format(amount);
 };
 
-export const formatDate = (date: Date): string => {
-  return date.toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+/**
+ * Alias for formatCurrency (backward compatibility)
+ */
+export const formatGermanPrice = formatCurrency;
+
+/**
+ * Format a date in German format
+ * @param date - Date object or ISO string
+ * @returns Formatted string like "30. Januar 2026"
+ */
+export const formatGermanDate = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat('de-DE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(dateObj);
 };
 
-export const cleanAddress = (address: string): string => {
-  return address.replace(/, Deutschland$/i, "").trim();
-};
-
-export const extractCity = (address: string): string => {
-  const parts = address.split(",").map((p) => p.trim());
-  if (parts.length >= 2) {
-    const cityPart = parts[parts.length - 2] || parts[parts.length - 1];
-    return cityPart.replace(/^\d{5}\s*/, "").trim();
-  }
-  return address;
-};
-
-export const getSalutationDisplay = (salutation: string): string => {
-  const lower = salutation.toLowerCase();
-  if (lower.includes("herr")) return "Herr";
-  if (lower.includes("frau")) return "Frau";
-  return "Herr";
+/**
+ * Get current date formatted in German
+ * @returns Current date like "30. Januar 2026"
+ */
+export const getCurrentGermanDate = (): string => {
+  return formatGermanDate(new Date());
 };
