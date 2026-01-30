@@ -1,6 +1,6 @@
 import React from 'react';
 import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
-import { formatCurrency, formatDate } from '../utils/formatters';
+import { formatCurrency, formatPriceString, formatDate, cleanAddress, getSalutationDisplay, generateOfferNumber } from '../utils/formatters';
 import type { PdfData } from '../types';
 
 const LOGO_URL = 'https://oqguansmlbkrtlkaddvu.supabase.co/storage/v1/object/public/email-assets/LOGO_IOP.png?v=1';
@@ -14,13 +14,31 @@ const colors = {
   border: '#e2e8f0',
   white: '#ffffff',
   accent: '#e0f2fe',
-  secondary: '#22c55e',
 };
 
-// Helper functions (bleiben gleich)
-const formatSalutation = (salutation: string) => {
-  if (!salutation) return '';
-  return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
+// Helper: Get image count text from package name
+const getImageCountText = (packageName: string): string => {
+  const match = packageName.match(/(\d+)\s*Bild/i);
+  if (match) {
+    return `${match[1]} Bilder für Ihr Portfolio`;
+  }
+  // Fallback mappings
+  const mappings: Record<string, string> = {
+    'Home S': '6 Bilder für Ihr Portfolio',
+    'Home M': '10 Bilder für Ihr Portfolio',
+    'Home L': '15 Bilder für Ihr Portfolio',
+    'Home XL': '20 Bilder für Ihr Portfolio',
+  };
+  for (const [key, value] of Object.entries(mappings)) {
+    if (packageName.includes(key)) return value;
+  }
+  return packageName;
+};
+
+// Helper: Get full salutation (Sehr geehrter Herr / Sehr geehrte Frau)
+const getFullSalutation = (salutation: string): string => {
+  const sal = getSalutationDisplay(salutation);
+  return sal === 'Frau' ? 'Sehr geehrte Frau' : 'Sehr geehrter Herr';
 };
 
 const formatShootingType = (type: string): string => {
@@ -34,7 +52,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 45,
     paddingBottom: 65,
-    fontSize: 9, // Leicht verkleinert für edleren Look
+    fontSize: 9,
     fontFamily: 'Helvetica',
     color: colors.text,
     backgroundColor: colors.white,
@@ -96,7 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 1.5,
   },
-  // Projekt-Card Optimierung
   projectCard: {
     borderLeftWidth: 2,
     borderLeftColor: colors.primary,
@@ -119,19 +136,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   projectItem: {
-    marginBottom: 6,
+    marginBottom: 8,
   },
+  // GRÖSSERE Labels (von 7 auf 8, mit bold)
   projectLabel: {
-    fontSize: 7,
+    fontSize: 8,
+    fontWeight: 'bold',
     color: colors.muted,
     textTransform: 'uppercase',
-    marginBottom: 1,
+    marginBottom: 2,
   },
   projectValue: {
     fontSize: 9,
     fontWeight: 'bold',
   },
-  // Inklusivleistungen
   section: {
     marginBottom: 20,
   },
@@ -163,7 +181,6 @@ const styles = StyleSheet.create({
   featureText: {
     fontSize: 8.5,
   },
-  // Flexibility Note - Ohne Emoji, mit Design-Element
   flexibilityNote: {
     backgroundColor: '#eff6ff',
     padding: 10,
@@ -176,7 +193,6 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: '#1e40af',
   },
-  // Pricing Box
   pricingBox: {
     backgroundColor: colors.primary,
     padding: 18,
@@ -223,56 +239,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.white,
   },
-  // Next Steps
-  nextStepsBox: {
-    padding: 15,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 6,
-    marginBottom: 15,
-  },
-  nextStepsTitle: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginBottom: 12,
-  },
-  stepRow: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  stepNumber: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  stepNumberText: {
-    fontSize: 8,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
-  stepText: {
-    fontSize: 9,
-    color: colors.text,
-    flex: 1,
-  },
-  ctaBox: {
-    backgroundColor: colors.secondary,
-    padding: 12,
-    borderRadius: 4,
-    marginTop: 5,
-    alignItems: 'center',
-  },
-  ctaText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
-  // Footer
   footer: {
     position: 'absolute',
     bottom: 30,
@@ -295,18 +261,34 @@ const styles = StyleSheet.create({
   },
 });
 
+interface Props {
+  data: PdfData;
+}
+
 export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
-  const salutation = formatSalutation(data.contact.salutation);
+  // Preise zusammenführen: Paketpreis + Anfahrt = ein Posten
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
+  const combinedPackagePrice = packagePrice + travelCost;
+  
+  // Bilderanzahl-Text statt Paketname
+  const portfolioText = getImageCountText(data.project.packageName);
+  
+  // Korrekte Anrede
+  const fullSalutation = getFullSalutation(data.contact.salutation);
+  const salutationDisplay = getSalutationDisplay(data.contact.salutation);
+  
+  // Adresse bereinigen (ohne Germany/Deutschland)
+  const cleanedAddress = cleanAddress(data.project.address);
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* Header */}
         <View style={styles.header}>
           <Image src={LOGO_URL} style={styles.logo} />
           <View style={styles.headerRight}>
-            <Text style={styles.offerNumber}>Angebot #{Math.floor(Math.random() * 9000) + 1000}</Text>
+            <Text style={styles.offerNumber}>Angebot {generateOfferNumber()}</Text>
             <Text style={styles.dateText}>Datum: {formatDate(new Date())}</Text>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>30 Tage gültig</Text>
@@ -314,28 +296,33 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         </View>
 
+        {/* Empfänger */}
         <View style={styles.recipient}>
           {data.contact.company && <Text style={{...styles.recipientText, fontWeight: 'bold'}}>{data.contact.company}</Text>}
-          <Text style={styles.recipientText}>{salutation} {data.contact.firstName} {data.contact.lastName}</Text>
-          <Text style={styles.recipientText}>{data.contact.street}</Text>
-          <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>
+          <Text style={styles.recipientText}>{salutationDisplay} {data.contact.firstName} {data.contact.lastName}</Text>
+          {data.contact.street && <Text style={styles.recipientText}>{data.contact.street}</Text>}
+          {(data.contact.zipCode || data.contact.city) && (
+            <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>
+          )}
         </View>
 
+        {/* Titel & Anrede - KORRIGIERT */}
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr persönliches Angebot</Text>
           <Text style={styles.greetingText}>
-            Sehr geehrte(r) {salutation} {data.contact.lastName},{'\n'}
-            vielen Dank für das angenehme Gespräch. Basierend auf Ihren Anforderungen haben wir folgendes Paket für Sie zusammengestellt:
+            {fullSalutation} {data.contact.lastName},{'\n'}
+            vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner. Basierend auf Ihren Angaben haben wir folgendes Angebot für Sie erstellt:
           </Text>
         </View>
 
+        {/* Projektdaten - mit Bilderanzahl statt Paketname */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdaten im Überblick</Text>
           <View style={styles.projectGrid}>
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Objektadresse</Text>
-                <Text style={styles.projectValue}>{data.project.address}</Text>
+                <Text style={styles.projectValue}>{cleanedAddress}</Text>
               </View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Leistungsumfang</Text>
@@ -344,8 +331,8 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
             </View>
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Gewähltes Paket</Text>
-                <Text style={styles.projectValue}>{data.project.packageName}</Text>
+                <Text style={styles.projectLabel}>Gewähltes Portfolio</Text>
+                <Text style={styles.projectValue}>{portfolioText}</Text>
               </View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Geplante Dauer</Text>
@@ -355,10 +342,11 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         </View>
 
+        {/* Inklusivleistungen */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inklusivleistungen & Standards</Text>
           <View style={styles.featuresGrid}>
-            {['Prof. Bildbearbeitung', 'Blauer-Himmel-Garantie', 'Kommerzielle Rechte', 'High-Res Download', 'ImmoScout Optimierung', 'Lieferung in 48h'].map((f, i) => (
+            {['Prof. Bildbearbeitung', 'Blauer-Himmel-Garantie', 'Kommerzielle Nutzungsrechte', 'High-Res Download', 'ImmoScout Optimierung', 'Lieferung in 48h'].map((f, i) => (
               <View key={i} style={styles.featureItem}>
                 <View style={styles.bullet} />
                 <Text style={styles.featureText}>{f}</Text>
@@ -372,53 +360,43 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         </View>
 
+        {/* Kostenübersicht - KORRIGIERT: Paket+Anfahrt zusammen, Upgrades einzeln */}
         <View style={styles.pricingBox} wrap={false}>
           <Text style={styles.pricingTitle}>Kostenübersicht</Text>
+          
+          {/* Paketpreis + Anfahrt kombiniert */}
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>{data.project.packageName} (Grundpreis)</Text>
-            <Text style={styles.pricingValue}>{formatCurrency(packagePrice)}</Text>
+            <Text style={styles.pricingLabel}>{data.project.packageName} (inkl. Anfahrt)</Text>
+            <Text style={styles.pricingValue}>{formatCurrency(combinedPackagePrice)}</Text>
           </View>
-          {travelCost > 0 && (
-            <View style={styles.pricingRow}>
-              <Text style={styles.pricingLabel}>Anfahrtskosten</Text>
-              <Text style={styles.pricingValue}>{formatCurrency(travelCost)}</Text>
+          
+          {/* Alle Upgrades einzeln auflisten */}
+          {data.upgrades && data.upgrades.length > 0 && data.upgrades.map((upgrade, index) => (
+            <View key={index} style={styles.pricingRow}>
+              <Text style={styles.pricingLabel}>{upgrade.name}</Text>
+              <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
             </View>
-          )}
+          ))}
+          
           <View style={styles.pricingDivider} />
+          
+          {/* Netto/MwSt/Brutto mit korrekter Formatierung */}
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>Netto Gesamt</Text>
-            <Text style={styles.pricingValue}>{data.pricing.netPrice}</Text>
+            <Text style={styles.pricingValue}>{formatPriceString(data.pricing.netPrice)}</Text>
           </View>
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>MwSt. 19%</Text>
-            <Text style={styles.pricingValue}>{data.pricing.vatAmount}</Text>
+            <Text style={styles.pricingValue}>{formatPriceString(data.pricing.vatAmount || '')}</Text>
           </View>
           <View style={styles.pricingDivider} />
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Gesamtbetrag</Text>
-            <Text style={styles.totalValue}>{data.pricing.grossPrice}</Text>
+            <Text style={styles.totalValue}>{formatPriceString(data.pricing.grossPrice)}</Text>
           </View>
         </View>
 
-        <View style={styles.nextStepsBox} wrap={false}>
-          <Text style={styles.nextStepsTitle}>Nächste Schritte</Text>
-          <View style={styles.stepRow}>
-            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>1</Text></View>
-            <Text style={styles.stepText}>Terminbestätigung via E-Mail oder Telefon.</Text>
-          </View>
-          <View style={styles.stepRow}>
-            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>2</Text></View>
-            <Text style={styles.stepText}>Shooting vor Ort – wir rücken Ihr Objekt ins rechte Licht.</Text>
-          </View>
-          <View style={styles.stepRow}>
-            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>3</Text></View>
-            <Text style={styles.stepText}>Bildauswahl & Erhalt der fertigen Dateien innerhalb von 48h.</Text>
-          </View>
-          <View style={styles.ctaBox}>
-            <Text style={styles.ctaText}>Jetzt Shooting verbindlich anfragen</Text>
-          </View>
-        </View>
-
+        {/* Footer */}
         <View style={styles.footer} fixed>
           <View style={styles.footerContent}>
             <Text style={styles.footerText}>
