@@ -1,53 +1,75 @@
 import React from 'react';
 import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
+import { formatCurrency, formatDate } from '../utils/formatters';
 import type { PdfData } from '../types';
 
 const LOGO_URL = 'https://oqguansmlbkrtlkaddvu.supabase.co/storage/v1/object/public/email-assets/LOGO_IOP.png?v=1';
+
+const colors = {
+  primary: '#233C63',
+  text: '#1a1a1a',
+  muted: '#64748b',
+  lightBg: '#f8fafc',
+  border: '#e2e8f0',
+  white: '#ffffff',
+};
 
 const styles = StyleSheet.create({
   page: {
     padding: 50,
     fontSize: 10,
     fontFamily: 'Helvetica',
-    color: '#1a1a1a',
-    backgroundColor: '#ffffff',
+    color: colors.text,
+    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 30,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eef0f2',
   },
   logo: {
-    width: 150,
-    height: 35,
+    width: 160,
+    height: 36,
   },
-  validityBadge: {
+  badge: {
     backgroundColor: '#f0f4f8',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 10,
+    borderRadius: 8,
   },
-  validityText: {
+  badgeText: {
     fontSize: 9,
-    color: '#233C63',
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  recipient: {
+    marginBottom: 25,
+  },
+  recipientText: {
+    fontSize: 10,
+    lineHeight: 1.5,
   },
   title: {
-    fontSize: 20,
-    color: '#233C63',
     marginBottom: 20,
+  },
+  h1: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 15,
   },
   greeting: {
     fontSize: 11,
-    marginBottom: 15,
+    marginBottom: 10,
+  },
+  intro: {
+    fontSize: 10,
+    color: colors.muted,
     lineHeight: 1.5,
   },
   projectCard: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.lightBg,
     padding: 20,
     borderRadius: 8,
     marginBottom: 20,
@@ -55,22 +77,22 @@ const styles = StyleSheet.create({
   projectTitle: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#233C63',
-    marginBottom: 10,
+    color: colors.primary,
+    marginBottom: 12,
   },
   projectRow: {
     flexDirection: 'row',
-    marginBottom: 5,
+    marginBottom: 6,
   },
   projectLabel: {
-    width: 120,
-    fontSize: 10,
-    color: '#64748b',
+    width: 100,
+    fontSize: 9,
+    color: colors.muted,
   },
   projectValue: {
-    fontSize: 10,
-    color: '#1a1a1a',
     flex: 1,
+    fontSize: 9,
+    fontWeight: 'bold',
   },
   section: {
     marginBottom: 20,
@@ -78,32 +100,37 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#233C63',
+    color: colors.primary,
     marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingBottom: 5,
   },
-  featureRow: {
+  featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 5,
   },
-  checkmark: {
-    color: '#22c55e',
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.primary,
     marginRight: 8,
-    fontSize: 10,
   },
   featureText: {
-    fontSize: 10,
+    fontSize: 9,
   },
   pricingBox: {
-    backgroundColor: '#233C63',
+    backgroundColor: colors.primary,
     padding: 20,
     borderRadius: 8,
-    marginTop: 20,
+    marginBottom: 20,
   },
   pricingTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.white,
     marginBottom: 15,
   },
   pricingRow: {
@@ -113,47 +140,48 @@ const styles = StyleSheet.create({
   },
   pricingLabel: {
     fontSize: 10,
-    color: '#ffffff',
+    color: 'rgba(255,255,255,0.9)',
   },
   pricingValue: {
     fontSize: 10,
-    color: '#ffffff',
+    fontWeight: 'bold',
+    color: colors.white,
   },
-  pricingTotal: {
+  pricingDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    marginVertical: 10,
+  },
+  totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.3)',
-    paddingTop: 10,
-    marginTop: 10,
   },
-  pricingTotalLabel: {
+  totalLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: colors.white,
+  },
+  totalValue: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  pricingTotalValue: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.white,
   },
   footer: {
     position: 'absolute',
     bottom: 30,
     left: 50,
     right: 50,
-    textAlign: 'center',
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: 15,
+  },
+  footerText: {
     fontSize: 8,
-    color: '#64748b',
+    color: colors.muted,
+    textAlign: 'center',
+    lineHeight: 1.4,
   },
 });
-
-const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(price);
-};
 
 interface Props {
   data: PdfData;
@@ -162,19 +190,19 @@ interface Props {
 export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
   const validUntil = new Date();
   validUntil.setDate(validUntil.getDate() + 30);
-  const validStr = validUntil.toLocaleDateString('de-DE');
   
   const features = [
     'Kommerzielle Nutzungsrechte',
     'Verkaufspsychologische Bildoptimierung',
     'Optimiert für ImmoScout & Co.',
     'Blaue-Himmel-Garantie',
-    'Hochstativ-Aufnahmen',
   ];
-
-  const nettoPrice = data.pricing.totalPrice;
-  const mwst = nettoPrice * 0.19;
-  const bruttoPrice = nettoPrice * 1.19;
+  
+  // Calculate pricing values with fallbacks
+  const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
+  const travelCost = data.pricing.travelCost ?? 0;
+  const upgradesTotal = data.pricing.upgradesTotal ?? 0;
+  const imageCount = data.project.imageCount ?? data.project.packageImages ?? 0;
 
   return (
     <Document>
@@ -182,40 +210,64 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         {/* Header */}
         <View style={styles.header}>
           <Image src={LOGO_URL} style={styles.logo} />
-          <View style={styles.validityBadge}>
-            <Text style={styles.validityText}>Gültig bis {validStr}</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>Gültig bis {formatDate(validUntil)}</Text>
           </View>
         </View>
 
-        {/* Title */}
-        <Text style={styles.title}>Ihr individuelles Angebot</Text>
-        
-        {/* Greeting */}
-        <Text style={styles.greeting}>
-          Guten Tag {data.contact.salutation} {data.contact.lastName},{'\n\n'}
-          vielen Dank für Ihr Interesse an unseren professionellen Immobilienfotografie-Leistungen. 
-          Gerne unterbreiten wir Ihnen folgendes individuelles Angebot:
-        </Text>
+        {/* Recipient */}
+        <View style={styles.recipient}>
+          {data.contact.company && (
+            <Text style={styles.recipientText}>{data.contact.company}</Text>
+          )}
+          <Text style={styles.recipientText}>
+            {data.contact.salutation} {data.contact.firstName} {data.contact.lastName}
+          </Text>
+          {data.contact.street && (
+            <Text style={styles.recipientText}>{data.contact.street}</Text>
+          )}
+          {data.contact.zipCode && data.contact.city && (
+            <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>
+          )}
+        </View>
+
+        {/* Title & Greeting */}
+        <View style={styles.title}>
+          <Text style={styles.h1}>Ihr individuelles Angebot</Text>
+          <Text style={styles.greeting}>
+            Guten Tag {data.contact.salutation} {data.contact.lastName},
+          </Text>
+          <Text style={styles.intro}>
+            vielen Dank für Ihr Interesse an unseren professionellen Immobilienfotografie-Leistungen. 
+            Gerne unterbreiten wir Ihnen folgendes Angebot:
+          </Text>
+        </View>
 
         {/* Project Card */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdetails</Text>
           <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Shooting-Art:</Text>
+            <Text style={styles.projectLabel}>Objekt:</Text>
+            <Text style={styles.projectValue}>{data.project.address}</Text>
+          </View>
+          <View style={styles.projectRow}>
+            <Text style={styles.projectLabel}>Leistung:</Text>
             <Text style={styles.projectValue}>{data.project.shootingType}</Text>
           </View>
           <View style={styles.projectRow}>
             <Text style={styles.projectLabel}>Paket:</Text>
             <Text style={styles.projectValue}>{data.project.packageName}</Text>
           </View>
-          <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Adresse:</Text>
-            <Text style={styles.projectValue}>{data.project.address}</Text>
-          </View>
-          {data.project.imageCount && (
+          {imageCount > 0 && (
             <View style={styles.projectRow}>
-              <Text style={styles.projectLabel}>Anzahl Bilder:</Text>
-              <Text style={styles.projectValue}>{data.project.imageCount}</Text>
+              <Text style={styles.projectLabel}>Bildanzahl:</Text>
+              <Text style={styles.projectValue}>{imageCount} Bilder</Text>
+            </View>
+          )}
+          {data.project.packageDuration && (
+            <View style={styles.projectRow}>
+              <Text style={styles.projectLabel}>Dauer:</Text>
+              <Text style={styles.projectValue}>{data.project.packageDuration}</Text>
             </View>
           )}
         </View>
@@ -224,22 +276,22 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inklusivleistungen</Text>
           {features.map((feature, index) => (
-            <View key={index} style={styles.featureRow}>
-              <Text style={styles.checkmark}>✓</Text>
+            <View key={index} style={styles.featureItem}>
+              <View style={styles.bullet} />
               <Text style={styles.featureText}>{feature}</Text>
             </View>
           ))}
         </View>
 
         {/* Upgrades */}
-        {data.upgrades && data.upgrades.length > 0 && (
+        {data.upgrades.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Zusatzleistungen</Text>
             {data.upgrades.map((upgrade, index) => (
-              <View key={index} style={styles.featureRow}>
-                <Text style={styles.checkmark}>+</Text>
+              <View key={index} style={styles.featureItem}>
+                <View style={styles.bullet} />
                 <Text style={styles.featureText}>
-                  {upgrade.name} ({formatPrice(upgrade.price)})
+                  {upgrade.name} — {formatCurrency(upgrade.price)}
                 </Text>
               </View>
             ))}
@@ -251,44 +303,48 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           <Text style={styles.pricingTitle}>Ihre Investition</Text>
           
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>{data.project.packageName}</Text>
-            <Text style={styles.pricingValue}>{formatPrice(data.pricing.packagePrice)}</Text>
+            <Text style={styles.pricingLabel}>
+              {data.project.packageName} {travelCost > 0 ? '(inkl. Anfahrt)' : ''}
+            </Text>
+            <Text style={styles.pricingValue}>
+              {formatCurrency(packagePrice + travelCost)}
+            </Text>
           </View>
           
-          {data.pricing.travelCost > 0 && (
+          {upgradesTotal > 0 && (
             <View style={styles.pricingRow}>
-              <Text style={styles.pricingLabel}>Anfahrtskosten</Text>
-              <Text style={styles.pricingValue}>{formatPrice(data.pricing.travelCost)}</Text>
+              <Text style={styles.pricingLabel}>Zusatzleistungen</Text>
+              <Text style={styles.pricingValue}>{formatCurrency(upgradesTotal)}</Text>
             </View>
           )}
           
-          {data.pricing.upgradesTotal > 0 && (
-            <View style={styles.pricingRow}>
-              <Text style={styles.pricingLabel}>Zusatzleistungen</Text>
-              <Text style={styles.pricingValue}>{formatPrice(data.pricing.upgradesTotal)}</Text>
-            </View>
-          )}
+          <View style={styles.pricingDivider} />
           
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>Netto</Text>
-            <Text style={styles.pricingValue}>{formatPrice(nettoPrice)}</Text>
+            <Text style={styles.pricingValue}>{data.pricing.netPrice}</Text>
           </View>
-          
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>MwSt. (19%)</Text>
-            <Text style={styles.pricingValue}>{formatPrice(mwst)}</Text>
+            <Text style={styles.pricingLabel}>zzgl. 19% MwSt.</Text>
+            <Text style={styles.pricingValue}>{data.pricing.vatAmount}</Text>
           </View>
           
-          <View style={styles.pricingTotal}>
-            <Text style={styles.pricingTotalLabel}>Gesamtbetrag (brutto)</Text>
-            <Text style={styles.pricingTotalValue}>{formatPrice(bruttoPrice)}</Text>
+          <View style={styles.pricingDivider} />
+          
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Gesamtbetrag (brutto)</Text>
+            <Text style={styles.totalValue}>{data.pricing.grossPrice}</Text>
           </View>
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer}>
-          ImmoOnPoint GmbH • www.immoonpoint.de • info@immoonpoint.de
-        </Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            ImmoOnPoint • Professionelle Immobilienfotografie{'\n'}
+            E-Mail: info@immoonpoint.de • Web: www.immoonpoint.de{'\n'}
+            Dieses Angebot ist 30 Tage gültig.
+          </Text>
+        </View>
       </Page>
     </Document>
   );
