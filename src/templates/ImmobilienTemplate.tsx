@@ -20,27 +20,30 @@ const colors = {
 const getImageCountText = (packageName: string, packageImages?: number): string => {
   // 1. Priorität: Wenn die Zahl direkt in den Daten liegt
   if (packageImages && packageImages > 0) {
-    return `${packageImages} Bilder`;
+    return `${packageImages} High-End Aufnahmen`;
   }
 
   // 2. Priorität: Suche nach einer Zahl im Namen (z.B. "10 Bilder Paket")
   const match = packageName.match(/(\d+)/);
   if (match) {
-    return `${match[1]} Bilder`;
+    return `${match[1]} High-End Aufnahmen`;
   }
 
   // 3. Priorität: Feste Zuordnungen für Namen ohne Zahlen
   const mappings: Record<string, string> = {
-    'Home S': '6 Bilder',
-    'Home M': '10 Bilder',
-    'Home L': '15 Bilder',
-    'Home XL': '20 Bilder',
-    'Exklusiv': '25 Bilder', // Beispielwert für Exklusiv-Pakete
+    'Home S': '6 High-End Aufnahmen',
+    'Home M': '10 High-End Aufnahmen',
+    'Home L': '15 High-End Aufnahmen',
+    'Home XL': '20 High-End Aufnahmen',
+    'Exklusiv': '25 High-End Aufnahmen',
   };
 
   for (const [key, value] of Object.entries(mappings)) {
     if (packageName.includes(key)) return value;
   }
+
+  return packageName; 
+};
 
   return packageName; 
 };
@@ -223,10 +226,10 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
               </View>
             </View>
             <View style={styles.projectColumn}>
-              <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Leistungsumfang</Text>
-                <Text style={styles.projectValue}>{imageCountText}</Text>
-              </View>
+             <View style={styles.projectItem}>
+  <Text style={styles.projectLabel}>Leistungsumfang</Text>
+  <Text style={styles.projectValue}>{portfolioText}</Text>
+</View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Geplante Dauer</Text>
                 <Text style={styles.projectValue}>{data.project.packageDuration || 'ca. 1.5 Std.'}</Text>
