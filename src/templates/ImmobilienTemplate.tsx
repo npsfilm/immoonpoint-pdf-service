@@ -14,7 +14,6 @@ const colors = {
   white: '#ffffff',
 };
 
-// Hilfsfunktion zur Formatierung der Anrede
 const formatSalutation = (salutation: string) => {
   if (!salutation) return '';
   return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
@@ -22,7 +21,9 @@ const formatSalutation = (salutation: string) => {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 50,
+    paddingTop: 30,      // Weniger Abstand oben
+    paddingHorizontal: 40, // Weniger Abstand an den Seiten
+    paddingBottom: 50,
     fontSize: 10,
     fontFamily: 'Helvetica',
     color: colors.text,
@@ -32,167 +33,174 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   logo: {
-    width: 140, // Breite beibehalten
-    height: 'auto', // Höhe auf auto für richtige Perspektive
+    width: 110, // Logo kleiner gemacht
+    height: 'auto',
     objectFit: 'contain',
   },
   badge: {
     backgroundColor: '#f0f4f8',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   badgeText: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: colors.primary,
   },
   recipient: {
-    marginBottom: 25,
+    marginBottom: 20,
   },
   recipientText: {
-    fontSize: 10,
-    lineHeight: 1.5,
+    fontSize: 9,
+    lineHeight: 1.4,
   },
   title: {
-    marginBottom: 20,
-  },
-  h1: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.primary,
     marginBottom: 15,
   },
-  greeting: {
-    fontSize: 11,
-    marginBottom: 10,
-  },
-  intro: {
-    fontSize: 10,
-    color: colors.muted,
-    lineHeight: 1.5,
-  },
-  projectCard: {
-    backgroundColor: colors.lightBg,
-    padding: 15, // Etwas kompakter
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  projectTitle: {
-    fontSize: 11,
+  h1: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: colors.primary,
     marginBottom: 10,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
-  projectRow: {
+  greeting: {
+    fontSize: 10,
+    marginBottom: 8,
+  },
+  intro: {
+    fontSize: 9,
+    color: colors.muted,
+    lineHeight: 1.4,
+  },
+  // Projekt-Grid
+  projectCard: {
+    backgroundColor: colors.lightBg,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  projectTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  projectGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Links-Rechts Darstellung
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
-    paddingVertical: 4,
+  },
+  projectColumn: {
+    flex: 1,
+  },
+  projectItem: {
+    marginBottom: 4,
   },
   projectLabel: {
-    width: 80, // Kleinerer Abstand durch definierte Breite
-    fontSize: 9,
+    fontSize: 8,
     color: colors.muted,
   },
   projectValue: {
-    flex: 1,
     fontSize: 9,
     fontWeight: 'bold',
-    textAlign: 'right', // Rechtsbündig für Tabellen-Look
   },
+  // Leistungen-Grid
   section: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 10,
+    marginBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    paddingBottom: 5,
+    paddingBottom: 3,
+  },
+  featuresGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap', // Ermöglicht 2 Spalten
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    width: '50%', // Genau die Hälfte der Breite
+    marginBottom: 6,
   },
   bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
     backgroundColor: colors.primary,
-    marginRight: 8,
+    marginRight: 6,
   },
   featureText: {
-    fontSize: 9,
+    fontSize: 8.5,
   },
+  // Preis-Box
   pricingBox: {
     backgroundColor: colors.primary,
-    padding: 20,
+    padding: 15,
     borderRadius: 8,
+    marginTop: 10,
     marginBottom: 20,
   },
   pricingTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: colors.white,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   pricingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   pricingLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: 'rgba(255,255,255,0.9)',
   },
   pricingValue: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
     color: colors.white,
   },
   pricingDivider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginVertical: 8,
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   totalLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: colors.white,
   },
   totalValue: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: colors.white,
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
-    left: 50,
-    right: 50,
+    bottom: 25,
+    left: 40,
+    right: 40,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    paddingTop: 15,
+    paddingTop: 10,
   },
   footerText: {
-    fontSize: 8,
+    fontSize: 7.5,
     color: colors.muted,
     textAlign: 'center',
-    lineHeight: 1.4,
+    lineHeight: 1.3,
   },
 });
 
@@ -206,14 +214,14 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
   
   const features = [
     'Kommerzielle Nutzungsrechte',
-    'Verkaufspsychologische Bildoptimierung',
-    'Optimiert für ImmoScout & Co.',
+    'Bildoptimierung',
+    'ImmoScout Optimierung',
     'Blaue-Himmel-Garantie',
+    'Schnelle Lieferung',
+    'High-Res Dateien'
   ];
   
   const salutation = formatSalutation(data.contact.salutation);
-  
-  // Calculate pricing values
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
   const upgradesTotal = data.pricing.upgradesTotal ?? 0;
@@ -232,114 +240,100 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
 
         {/* Recipient */}
         <View style={styles.recipient}>
-          {data.contact.company && (
-            <Text style={styles.recipientText}>{data.contact.company}</Text>
-          )}
-          <Text style={styles.recipientText}>
-            {salutation} {data.contact.firstName} {data.contact.lastName}
-          </Text>
-          {data.contact.street && (
-            <Text style={styles.recipientText}>{data.contact.street}</Text>
-          )}
-          {data.contact.zipCode && data.contact.city && (
-            <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>
-          )}
+          {data.contact.company && <Text style={styles.recipientText}>{data.contact.company}</Text>}
+          <Text style={styles.recipientText}>{salutation} {data.contact.firstName} {data.contact.lastName}</Text>
+          {data.contact.street && <Text style={styles.recipientText}>{data.contact.street}</Text>}
+          {data.contact.zipCode && <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>}
         </View>
 
         {/* Title & Greeting */}
         <View style={styles.title}>
           <Text style={styles.h1}>Ihr individuelles Angebot</Text>
-          <Text style={styles.greeting}>
-            Guten Tag {salutation} {data.contact.lastName},
-          </Text>
+          <Text style={styles.greeting}>Guten Tag {salutation} {data.contact.lastName},</Text>
           <Text style={styles.intro}>
-            vielen Dank für Ihr Interesse an unseren professionellen Immobilienfotografie-Leistungen. 
-            Gerne unterbreiten wir Ihnen folgendes Angebot:
+            vielen Dank für Ihr Interesse. Gerne unterbreiten wir Ihnen folgendes Angebot:
           </Text>
         </View>
 
-        {/* Project Card */}
+        {/* Projektdetails in 2 Spalten */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdetails</Text>
-          
-          <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Objekt</Text>
-            <Text style={styles.projectValue}>{data.project.address}</Text>
-          </View>
-          
-          <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Leistung</Text>
-            <Text style={styles.projectValue}>{data.project.shootingType}</Text>
-          </View>
-          
-          <View style={styles.projectRow}>
-            <Text style={styles.projectLabel}>Paket</Text>
-            <Text style={styles.projectValue}>{data.project.packageName}</Text>
-          </View>
-          
-          {imageCount > 0 && (
-            <View style={styles.projectRow}>
-              <Text style={styles.projectLabel}>Bildanzahl</Text>
-              <Text style={styles.projectValue}>{imageCount} Bilder</Text>
+          <View style={styles.projectGrid}>
+            {/* Linke Spalte: 2 Items */}
+            <View style={styles.projectColumn}>
+              <View style={styles.projectItem}>
+                <Text style={styles.projectLabel}>Objekt</Text>
+                <Text style={styles.projectValue}>{data.project.address}</Text>
+              </View>
+              <View style={styles.projectItem}>
+                <Text style={styles.projectLabel}>Leistung</Text>
+                <Text style={styles.projectValue}>{data.project.shootingType}</Text>
+              </View>
             </View>
-          )}
-          
-          {data.project.packageDuration && (
-            <View style={styles.projectRow}>
-              <Text style={styles.projectLabel}>Dauer</Text>
-              <Text style={styles.projectValue}>{data.project.packageDuration}</Text>
+            {/* Rechte Spalte: 3 Items */}
+            <View style={styles.projectColumn}>
+              <View style={styles.projectItem}>
+                <Text style={styles.projectLabel}>Paket</Text>
+                <Text style={styles.projectValue}>{data.project.packageName}</Text>
+              </View>
+              {imageCount > 0 && (
+                <View style={styles.projectItem}>
+                  <Text style={styles.projectLabel}>Bildanzahl</Text>
+                  <Text style={styles.projectValue}>{imageCount} Bilder</Text>
+                </View>
+              )}
+              {data.project.packageDuration && (
+                <View style={styles.projectItem}>
+                  <Text style={styles.projectLabel}>Dauer</Text>
+                  <Text style={styles.projectValue}>{data.project.packageDuration}</Text>
+                </View>
+              )}
             </View>
-          )}
+          </View>
         </View>
 
-        {/* Features */}
+        {/* Inklusivleistungen in 2 Spalten */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inklusivleistungen</Text>
-          {features.map((feature, index) => (
-            <View key={index} style={styles.featureItem}>
-              <View style={styles.bullet} />
-              <Text style={styles.featureText}>{feature}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Upgrades */}
-        {data.upgrades.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Zusatzleistungen</Text>
-            {data.upgrades.map((upgrade, index) => (
+          <View style={styles.featuresGrid}>
+            {features.map((feature, index) => (
               <View key={index} style={styles.featureItem}>
                 <View style={styles.bullet} />
-                <Text style={styles.featureText}>
-                  {upgrade.name} — {formatCurrency(upgrade.price)}
-                </Text>
+                <Text style={styles.featureText}>{feature}</Text>
               </View>
             ))}
           </View>
+        </View>
+
+        {/* Zusatzleistungen */}
+        {data.upgrades.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Zusatzleistungen</Text>
+            <View style={styles.featuresGrid}>
+              {data.upgrades.map((upgrade, index) => (
+                <View key={index} style={styles.featureItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.featureText}>{upgrade.name}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
         )}
 
-        {/* Pricing Box */}
-        <View style={styles.pricingBox}>
+        {/* Preis-Box - wrap={false} verhindert das Trennen über zwei Seiten */}
+        <View style={styles.pricingBox} wrap={false}>
           <Text style={styles.pricingTitle}>Ihre Investition</Text>
-          
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>
-              {data.project.packageName} {travelCost > 0 ? '(inkl. Anfahrt)' : ''}
-            </Text>
-            <Text style={styles.pricingValue}>
-              {formatCurrency(packagePrice + travelCost)}
-            </Text>
+            <Text style={styles.pricingLabel}>{data.project.packageName} {travelCost > 0 ? '(inkl. Anfahrt)' : ''}</Text>
+            <Text style={styles.pricingValue}>{formatCurrency(packagePrice + travelCost)}</Text>
           </View>
-          
           {upgradesTotal > 0 && (
             <View style={styles.pricingRow}>
               <Text style={styles.pricingLabel}>Zusatzleistungen</Text>
               <Text style={styles.pricingValue}>{formatCurrency(upgradesTotal)}</Text>
             </View>
           )}
-          
           <View style={styles.pricingDivider} />
-          
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>Netto</Text>
             <Text style={styles.pricingValue}>{data.pricing.netPrice}</Text>
@@ -348,9 +342,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
             <Text style={styles.pricingLabel}>zzgl. 19% MwSt.</Text>
             <Text style={styles.pricingValue}>{data.pricing.vatAmount}</Text>
           </View>
-          
           <View style={styles.pricingDivider} />
-          
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Gesamtbetrag (brutto)</Text>
             <Text style={styles.totalValue}>{data.pricing.grossPrice}</Text>
@@ -361,8 +353,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             ImmoOnPoint • Professionelle Immobilienfotografie{'\n'}
-            E-Mail: info@immoonpoint.de • Web: www.immoonpoint.de{'\n'}
-            Dieses Angebot ist 30 Tage gültig.
+            E-Mail: info@immoonpoint.de • Web: www.immoonpoint.de • Gültig 30 Tage
           </Text>
         </View>
       </Page>
