@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import React from 'react';
-import { pdf } from '@react-pdf/renderer';
+import { renderToBuffer } from '@react-pdf/renderer';  // ← Named import
 import { PdfDocument } from './PdfDocument';
 import { PdfDataSchema } from './utils/validators';
 import type { PdfData } from './types';
@@ -30,18 +30,16 @@ app.post('/generate', async (req: Request, res: Response) => {
     }
     
     const data: PdfData = parseResult.data;
-    
     console.log(`Generating PDF for: ${data.contact.email}`);
     
     const pdfElement = React.createElement(PdfDocument, { data });
     
-    // ✅ FIX: Inline chaining + Buffer.from()
-    const pdfBuffer = await pdf(pdfElement as React.ReactElement).toBuffer();
-    const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+    // ✅ Named import von renderToBuffer
+    const pdfBuffer = await renderToBuffer(pdfElement as React.ReactElement);
+    const pdfBase64 = pdfBuffer.toString('base64');
     
     console.log(`PDF generated: ${pdfBuffer.length} bytes`);
     
-    // ✅ FIX: Response-Format wie Edge Function erwartet
     res.json({
       success: true,
       pdf: pdfBase64,
