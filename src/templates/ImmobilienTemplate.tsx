@@ -262,7 +262,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
 
         {/* Kostenübersicht */}
         <View style={styles.pricingBox} wrap={false}>
-          <Text style={styles.pricingTitle}>Kostenübersicht XX</Text>
+          <Text style={styles.pricingTitle}>Kostenübersicht:</Text>
           
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>{data.project.packageName} (inkl. Anfahrt)</Text>
