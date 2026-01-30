@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import React from 'react';
-import { pdf } from '@react-pdf/renderer';  // ← Geändert
+import { pdf } from '@react-pdf/renderer';
 import { PdfDocument } from './PdfDocument';
 import { PdfDataSchema } from './utils/validators';
 import type { PdfData } from './types';
@@ -8,12 +8,10 @@ import type { PdfData } from './types';
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 
-// Health check
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// PDF Generation Endpoint
 app.post('/generate', async (req: Request, res: Response) => {
   const apiKey = req.headers['x-api-key'];
   if (apiKey !== process.env.PDF_API_KEY) {
@@ -36,15 +34,17 @@ app.post('/generate', async (req: Request, res: Response) => {
     console.log(`Generating PDF for: ${data.contact.email}`);
     
     const pdfElement = React.createElement(PdfDocument, { data });
-    const pdfDoc = pdf(pdfElement as React.ReactElement);  // ← Geändert
-    const pdfBuffer = await pdfDoc.toBuffer();              // ← Geändert
     
-    const pdfBase64 = pdfBuffer.toString('base64');
+    // ✅ FIX: Inline chaining + Buffer.from()
+    const pdfBuffer = await pdf(pdfElement as React.ReactElement).toBuffer();
+    const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
     
     console.log(`PDF generated: ${pdfBuffer.length} bytes`);
     
+    // ✅ FIX: Response-Format wie Edge Function erwartet
     res.json({
-      pdfBase64,
+      success: true,
+      pdf: pdfBase64,
       size: pdfBuffer.length,
       filename: `Angebot-ImmoOnPoint-${Date.now()}.pdf`,
     });
