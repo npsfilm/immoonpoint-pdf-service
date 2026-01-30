@@ -1,10 +1,12 @@
+// Types for PDF generation
+
 export interface PdfContact {
   salutation: string;
   firstName: string;
   lastName: string;
-  company: string;
+  company?: string;
   email: string;
-  phone: string;
+  phone?: string;
   street?: string;
   zipCode?: string;
   city?: string;
@@ -18,6 +20,8 @@ export interface PdfProject {
   packageImages?: number;
   packageDuration?: string;
   packageFeatures?: string[];
+  imageCount?: number;
+  roomCount?: number;
 }
 
 export interface PdfUpgrade {
@@ -31,6 +35,9 @@ export interface PdfPricing {
   vatAmount: string;
   grossPrice: string;
   travelCost?: number;
+  packagePrice?: number;
+  upgradesTotal?: number;
+  totalPrice?: number;
 }
 
 export interface PdfData {
