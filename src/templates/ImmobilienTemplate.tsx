@@ -23,7 +23,7 @@ const getImageCountText = (packageName: string, packageImages?: number): string 
     return `${packageImages} High-End Aufnahmen`;
   }
 
-  // 2. Priorität: Suche nach einer Zahl im Namen (z.B. "10 Bilder Paket")
+  // 2. Priorität: Suche nach einer Zahl im Namen
   const match = packageName.match(/(\d+)/);
   if (match) {
     return `${match[1]} High-End Aufnahmen`;
@@ -42,7 +42,7 @@ const getImageCountText = (packageName: string, packageImages?: number): string 
     if (packageName.includes(key)) return value;
   }
 
-  return packageName; 
+  return packageName;
 };
 
   return packageName; 
@@ -157,7 +157,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
   const travelCost = data.pricing.travelCost ?? 0;
   const combinedPackagePrice = packagePrice + travelCost;
   
-  const portfolioText = getImageCountText(data.project.packageName);
+  const portfolioText = getImageCountText(data.project.packageName, data.project.packageImages);
   const salutationDisplay = getSalutationDisplay(data.contact.salutation);
   const fullSalutation = salutationDisplay === 'Frau' ? 'Sehr geehrte Frau' : 'Sehr geehrter Herr';
 
