@@ -45,8 +45,6 @@ const getImageCountText = (packageName: string, packageImages?: number): string 
   return packageName;
 };
 
-  return packageName; 
-};
 
 const formatShootingType = (type: string): string => {
   if (!type) return '';
