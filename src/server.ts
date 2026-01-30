@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import React from 'react';
-import ReactPDF from '@react-pdf/renderer';
+import { pdf } from '@react-pdf/renderer';  // ← Geändert
 import { PdfDocument } from './PdfDocument';
 import { PdfDataSchema } from './utils/validators';
 import type { PdfData } from './types';
@@ -15,7 +15,6 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // PDF Generation Endpoint
 app.post('/generate', async (req: Request, res: Response) => {
-  // 1. API-Key prüfen
   const apiKey = req.headers['x-api-key'];
   if (apiKey !== process.env.PDF_API_KEY) {
     res.status(401).json({ error: 'Unauthorized' });
@@ -23,7 +22,6 @@ app.post('/generate', async (req: Request, res: Response) => {
   }
 
   try {
-    // 2. Daten validieren
     const parseResult = PdfDataSchema.safeParse(req.body);
     if (!parseResult.success) {
       res.status(400).json({ 
@@ -35,13 +33,12 @@ app.post('/generate', async (req: Request, res: Response) => {
     
     const data: PdfData = parseResult.data;
     
-    // 3. PDF rendern
     console.log(`Generating PDF for: ${data.contact.email}`);
     
     const pdfElement = React.createElement(PdfDocument, { data });
-    const pdfBuffer = await ReactPDF.renderToBuffer(pdfElement as React.ReactElement);
+    const pdfDoc = pdf(pdfElement as React.ReactElement);  // ← Geändert
+    const pdfBuffer = await pdfDoc.toBuffer();              // ← Geändert
     
-    // 4. Base64 zurückgeben
     const pdfBase64 = pdfBuffer.toString('base64');
     
     console.log(`PDF generated: ${pdfBuffer.length} bytes`);
@@ -61,7 +58,7 @@ app.post('/generate', async (req: Request, res: Response) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`PDF Service running on port ${PORT}`);
 });
