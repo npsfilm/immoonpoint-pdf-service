@@ -1,33 +1,27 @@
-# ============================================
-# immoonpoint-pdf-service Dockerfile
-# Build + Run in container (no local build needed)
-# ============================================
-
+# Stage 1: Build
 FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Install ALL dependencies (including devDependencies for build)
-COPY package*.json ./
-RUN npm ci
+# Install all dependencies (including devDependencies for build)
+COPY package.json ./
+RUN npm install
 
 # Copy source code
-COPY tsconfig.json ./
 COPY src ./src
+COPY tsconfig.json ./
 
 # Build TypeScript
 RUN npm run build
 
-# ============================================
-# Production image (smaller)
-# ============================================
+# Stage 2: Production
 FROM node:20-slim
 
 WORKDIR /app
 
-# Install only production dependencies
-COPY package*.json ./
-RUN npm ci --only=production
+# Copy package.json and install production dependencies only
+COPY package.json ./
+RUN npm install --omit=dev
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
