@@ -3,15 +3,17 @@ FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Install all dependencies (including devDependencies for build)
+# Copy package files
 COPY package.json ./
+
+# Install ALL dependencies (including devDependencies for esbuild)
 RUN npm install
 
 # Copy source code
 COPY src ./src
 COPY tsconfig.json ./
 
-# Build TypeScript
+# Build with esbuild (creates single bundled file)
 RUN npm run build
 
 # Stage 2: Production
@@ -19,11 +21,13 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Copy package.json and install production dependencies only
+# Copy package.json for production dependencies
 COPY package.json ./
+
+# Install production dependencies only
 RUN npm install --omit=dev
 
-# Copy built files from builder stage
+# Copy bundled output from builder
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
