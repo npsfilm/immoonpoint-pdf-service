@@ -5,83 +5,36 @@ import type { PdfData } from '../types';
 
 const LOGO_URL = 'https://oqguansmlbkrtlkaddvu.supabase.co/storage/v1/object/public/email-assets/LOGO_IOP.png?v=1';
 
-// Design System Colors - aligned with Kostenrechner CSS
 const colors = {
-  primary: '#233C63',        // --primary: 217 51% 33%
-  primaryLight: '#2d4a7c',   // Lighter variant
-  text: '#1a1a1a',           // --foreground
-  muted: '#64748b',          // --muted-foreground
-  lightBg: '#f8fafc',        // --background
-  border: '#e2e8f0',         // --border
+  primary: '#233C63',
+  primaryLight: '#2d4a7c',
+  text: '#1a1a1a',
+  muted: '#64748b',
+  lightBg: '#f8fafc',
+  border: '#e2e8f0',
   white: '#ffffff',
-  accent: '#e0f2fe',         // --accent light blue
-  secondary: '#22c55e',      // --secondary green for CTA
+  accent: '#e0f2fe',
+  secondary: '#22c55e',
 };
 
-// Helper: Format salutation
+// Helper functions (bleiben gleich)
 const formatSalutation = (salutation: string) => {
   if (!salutation) return '';
   return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
 };
 
-// Helper: Format shooting type
 const formatShootingType = (type: string): string => {
   if (!type) return '';
   const cleaned = type.replace(/-shooting$/i, '').replace(/-/g, ' ');
-  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
-  return `${capitalized}-Shooting`;
-};
-
-// Helper: Generate offer number (IOP-YYMMDD-XXX)
-const generateOfferNumber = (): string => {
-  const now = new Date();
-  const yy = now.getFullYear().toString().slice(-2);
-  const mm = (now.getMonth() + 1).toString().padStart(2, '0');
-  const dd = now.getDate().toString().padStart(2, '0');
-  const random = Math.floor(Math.random() * 900) + 100; // 100-999
-  return `IOP-${yy}${mm}${dd}-${random}`;
-};
-
-// Helper: Clean address (remove Germany/Deutschland)
-const cleanAddress = (address: string): string => {
-  return address
-    .replace(/, Germany$/i, '')
-    .replace(/, Deutschland$/i, '')
-    .trim();
-};
-
-// Helper: Check for express delivery
-const hasExpressDelivery = (upgrades: Array<{ name: string }>) => 
-  upgrades.some(u => u.name.toLowerCase().includes('24h') || u.name.toLowerCase().includes('express'));
-
-// Helper: Get ordered features with dynamic delivery time
-const getOrderedFeatures = (packageFeatures: string[] | undefined, hasExpress: boolean): string[] => {
-  const defaultFeatures = [
-    'Professionelle Bildbearbeitung',
-    hasExpress ? '24 Stunden Lieferung' : '48 Stunden Lieferung',
-    'ImmoScout24 Optimierung',
-    'Blaue-Himmel-Garantie',
-    'Kommerzielle Nutzungsrechte',
-    'High-Res Dateien',
-  ];
-  
-  if (!packageFeatures?.length) return defaultFeatures;
-  
-  // Replace delivery time in package features if express is selected
-  return packageFeatures.map(feature => {
-    if (feature.toLowerCase().includes('48 stunden') && hasExpress) {
-      return '24 Stunden Lieferung';
-    }
-    return feature;
-  });
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase() + '-Shooting';
 };
 
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 30,
-    paddingHorizontal: 40,
-    paddingBottom: 60,
-    fontSize: 10,
+    paddingTop: 40,
+    paddingHorizontal: 45,
+    paddingBottom: 65,
+    fontSize: 9, // Leicht verkleinert für edleren Look
     fontFamily: 'Helvetica',
     color: colors.text,
     backgroundColor: colors.white,
@@ -90,10 +43,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 35,
   },
   logo: {
-    width: 110,
+    width: 100,
     height: 'auto',
     objectFit: 'contain',
   },
@@ -101,60 +54,63 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   dateText: {
-    fontSize: 9,
-    color: colors.text,
-    marginBottom: 4,
-  },
-  offerNumber: {
     fontSize: 8,
     color: colors.muted,
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  offerNumber: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 5,
   },
   badge: {
     backgroundColor: colors.accent,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
   },
   badgeText: {
-    fontSize: 8,
+    fontSize: 7,
     fontWeight: 'bold',
     color: colors.primary,
+    textTransform: 'uppercase',
   },
   recipient: {
-    marginBottom: 20,
+    marginBottom: 30,
   },
   recipientText: {
     fontSize: 9,
     lineHeight: 1.4,
   },
   title: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   h1: {
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   greetingText: {
     fontSize: 10,
-    color: colors.text,
     lineHeight: 1.5,
-    marginBottom: 4,
   },
+  // Projekt-Card Optimierung
   projectCard: {
+    borderLeftWidth: 2,
+    borderLeftColor: colors.primary,
     backgroundColor: colors.lightBg,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
+    padding: 15,
+    marginBottom: 20,
   },
   projectTitle: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 8,
+    marginBottom: 10,
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   projectGrid: {
     flexDirection: 'row',
@@ -166,25 +122,27 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   projectLabel: {
-    fontSize: 8,
+    fontSize: 7,
     color: colors.muted,
-    marginBottom: 2,
+    textTransform: 'uppercase',
+    marginBottom: 1,
   },
   projectValue: {
     fontSize: 9,
     fontWeight: 'bold',
   },
+  // Inklusivleistungen
   section: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 8,
+    marginBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    paddingBottom: 3,
+    paddingBottom: 4,
   },
   featuresGrid: {
     flexDirection: 'row',
@@ -194,73 +152,66 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '50%',
-    marginBottom: 6,
+    marginBottom: 5,
   },
   bullet: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 3,
+    height: 3,
     backgroundColor: colors.primary,
-    marginRight: 6,
+    marginRight: 8,
   },
   featureText: {
     fontSize: 8.5,
   },
-  // Flexibility note styling
+  // Flexibility Note - Ohne Emoji, mit Design-Element
   flexibilityNote: {
-    backgroundColor: colors.accent,
-    padding: 8,
-    borderRadius: 6,
-    marginTop: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  flexibilityIcon: {
-    fontSize: 10,
-    marginRight: 6,
+    backgroundColor: '#eff6ff',
+    padding: 10,
+    borderRadius: 4,
+    marginTop: 5,
+    borderLeftWidth: 2,
+    borderLeftColor: '#3b82f6',
   },
   flexibilityText: {
     fontSize: 8,
-    color: colors.primary,
-    fontStyle: 'italic',
-    flex: 1,
+    color: '#1e40af',
   },
-  // Pricing box
+  // Pricing Box
   pricingBox: {
     backgroundColor: colors.primary,
-    padding: 15,
-    borderRadius: 8,
-    marginTop: 10,
-    marginBottom: 15,
+    padding: 18,
+    borderRadius: 6,
+    marginBottom: 20,
   },
   pricingTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: colors.white,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   pricingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 5,
   },
   pricingLabel: {
-    fontSize: 9,
-    color: 'rgba(255,255,255,0.9)',
+    fontSize: 8.5,
+    color: 'rgba(255,255,255,0.7)',
   },
   pricingValue: {
-    fontSize: 9,
+    fontSize: 8.5,
     fontWeight: 'bold',
     color: colors.white,
   },
   pricingDivider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    marginVertical: 8,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    marginVertical: 10,
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   totalLabel: {
     fontSize: 11,
@@ -268,56 +219,52 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   totalValue: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
     color: colors.white,
   },
-  // Next Steps Section
+  // Next Steps
   nextStepsBox: {
-    backgroundColor: colors.lightBg,
+    padding: 15,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 6,
     marginBottom: 15,
   },
   nextStepsTitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   stepRow: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   stepNumber: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
   },
   stepNumberText: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: colors.white,
-  },
-  stepContent: {
-    flex: 1,
-    justifyContent: 'center',
   },
   stepText: {
     fontSize: 9,
     color: colors.text,
+    flex: 1,
   },
   ctaBox: {
     backgroundColor: colors.secondary,
-    padding: 10,
-    borderRadius: 6,
-    marginTop: 8,
+    padding: 12,
+    borderRadius: 4,
+    marginTop: 5,
     alignItems: 'center',
   },
   ctaText: {
@@ -325,20 +272,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.white,
   },
-  ctaSubtext: {
-    fontSize: 8,
-    color: 'rgba(255,255,255,0.9)',
-    marginTop: 2,
-  },
-  // Footer with page number
+  // Footer
   footer: {
     position: 'absolute',
-    bottom: 20,
-    left: 40,
-    right: 40,
+    bottom: 30,
+    left: 45,
+    right: 45,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    paddingTop: 8,
+    paddingTop: 10,
   },
   footerContent: {
     flexDirection: 'row',
@@ -346,208 +288,144 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    fontSize: 7,
+    fontSize: 6.5,
     color: colors.muted,
-    lineHeight: 1.3,
     flex: 1,
-  },
-  pageNumber: {
-    fontSize: 8,
-    color: colors.muted,
+    lineHeight: 1.4,
   },
 });
 
-interface Props {
-  data: PdfData;
-}
-
 export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
-  const today = new Date();
-  const validUntil = new Date();
-  validUntil.setDate(validUntil.getDate() + 30);
-  const offerNumber = generateOfferNumber();
-  
-  const hasExpress = hasExpressDelivery(data.upgrades);
-  const features = getOrderedFeatures(data.project.packageFeatures, hasExpress);
-  
   const salutation = formatSalutation(data.contact.salutation);
-  const shootingType = formatShootingType(data.project.shootingType);
-  const cleanedAddress = cleanAddress(data.project.address);
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
-  const imageCount = data.project.imageCount ?? data.project.packageImages ?? 0;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header with date and offer number */}
         <View style={styles.header}>
           <Image src={LOGO_URL} style={styles.logo} />
           <View style={styles.headerRight}>
-            <Text style={styles.dateText}>{formatDate(today)}</Text>
-            <Text style={styles.offerNumber}>Angebot {offerNumber}</Text>
+            <Text style={styles.offerNumber}>Angebot #{Math.floor(Math.random() * 9000) + 1000}</Text>
+            <Text style={styles.dateText}>Datum: {formatDate(new Date())}</Text>
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>Gültig bis {formatDate(validUntil)}</Text>
+              <Text style={styles.badgeText}>30 Tage gültig</Text>
             </View>
           </View>
         </View>
 
-        {/* Recipient - with cleaned address */}
         <View style={styles.recipient}>
-          {data.contact.company && <Text style={styles.recipientText}>{data.contact.company}</Text>}
+          {data.contact.company && <Text style={{...styles.recipientText, fontWeight: 'bold'}}>{data.contact.company}</Text>}
           <Text style={styles.recipientText}>{salutation} {data.contact.firstName} {data.contact.lastName}</Text>
-          {data.contact.street && <Text style={styles.recipientText}>{data.contact.street}</Text>}
-          {data.contact.zipCode && <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>}
+          <Text style={styles.recipientText}>{data.contact.street}</Text>
+          <Text style={styles.recipientText}>{data.contact.zipCode} {data.contact.city}</Text>
         </View>
 
-        {/* Title & Greeting */}
         <View style={styles.title}>
-          <Text style={styles.h1}>Ihr individuelles Angebot</Text>
+          <Text style={styles.h1}>Ihr persönliches Angebot</Text>
           <Text style={styles.greetingText}>
-            Guten Tag {salutation} {data.contact.lastName},{'\n'}
-            vielen Dank für Ihr Interesse. Gerne unterbreiten wir Ihnen folgendes Angebot:
+            Sehr geehrte(r) {salutation} {data.contact.lastName},{'\n'}
+            vielen Dank für das angenehme Gespräch. Basierend auf Ihren Anforderungen haben wir folgendes Paket für Sie zusammengestellt:
           </Text>
         </View>
 
-        {/* Project Details - with cleaned address */}
         <View style={styles.projectCard}>
-          <Text style={styles.projectTitle}>Projektdetails</Text>
+          <Text style={styles.projectTitle}>Projektdaten im Überblick</Text>
           <View style={styles.projectGrid}>
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Objekt</Text>
-                <Text style={styles.projectValue}>{cleanedAddress}</Text>
+                <Text style={styles.projectLabel}>Objektadresse</Text>
+                <Text style={styles.projectValue}>{data.project.address}</Text>
               </View>
               <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Leistung</Text>
-                <Text style={styles.projectValue}>{shootingType}</Text>
+                <Text style={styles.projectLabel}>Leistungsumfang</Text>
+                <Text style={styles.projectValue}>{formatShootingType(data.project.shootingType)}</Text>
               </View>
             </View>
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
-                <Text style={styles.projectLabel}>Paket</Text>
+                <Text style={styles.projectLabel}>Gewähltes Paket</Text>
                 <Text style={styles.projectValue}>{data.project.packageName}</Text>
               </View>
-              {imageCount > 0 && (
-                <View style={styles.projectItem}>
-                  <Text style={styles.projectLabel}>Bildanzahl</Text>
-                  <Text style={styles.projectValue}>{imageCount} Bilder (Richtwert)</Text>
-                </View>
-              )}
-              {data.project.packageDuration && (
-                <View style={styles.projectItem}>
-                  <Text style={styles.projectLabel}>Dauer</Text>
-                  <Text style={styles.projectValue}>{data.project.packageDuration}</Text>
-                </View>
-              )}
+              <View style={styles.projectItem}>
+                <Text style={styles.projectLabel}>Geplante Dauer</Text>
+                <Text style={styles.projectValue}>{data.project.packageDuration || 'ca. 1.5 Std.'}</Text>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Features with flexibility note */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Inklusivleistungen</Text>
+          <Text style={styles.sectionTitle}>Inklusivleistungen & Standards</Text>
           <View style={styles.featuresGrid}>
-            {features.map((feature, index) => (
-              <View key={index} style={styles.featureItem}>
+            {['Prof. Bildbearbeitung', 'Blauer-Himmel-Garantie', 'Kommerzielle Rechte', 'High-Res Download', 'ImmoScout Optimierung', 'Lieferung in 48h'].map((f, i) => (
+              <View key={i} style={styles.featureItem}>
                 <View style={styles.bullet} />
-                <Text style={styles.featureText}>{feature}</Text>
+                <Text style={styles.featureText}>{f}</Text>
               </View>
             ))}
           </View>
-          {/* Flexibility Note */}
           <View style={styles.flexibilityNote}>
-            <Text style={styles.flexibilityIcon}>💡</Text>
             <Text style={styles.flexibilityText}>
-              Finale Bildanzahl nach Bedarf – abgerechnet wird nur, was Sie tatsächlich nutzen.
+              Hinweis: Wir berechnen am Ende nur die Bilder, die Sie wirklich für Ihre Vermarktung auswählen. Maximale Flexibilität für Ihr Budget.
             </Text>
           </View>
         </View>
 
-        {/* Upgrades */}
-        {data.upgrades.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Zusatzleistungen</Text>
-            <View style={styles.featuresGrid}>
-              {data.upgrades.map((upgrade, index) => (
-                <View key={index} style={styles.featureItem}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.featureText}>{upgrade.name}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Pricing Box */}
         <View style={styles.pricingBox} wrap={false}>
-          <Text style={styles.pricingTitle}>Kostenaufstellung für Ihr Shooting</Text>
+          <Text style={styles.pricingTitle}>Kostenübersicht</Text>
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>{data.project.packageName} {travelCost > 0 ? '(inkl. Anfahrt)' : ''}</Text>
-            <Text style={styles.pricingValue}>{formatCurrency(packagePrice + travelCost)}</Text>
+            <Text style={styles.pricingLabel}>{data.project.packageName} (Grundpreis)</Text>
+            <Text style={styles.pricingValue}>{formatCurrency(packagePrice)}</Text>
           </View>
-          {data.upgrades.map((upgrade, index) => (
-            <View key={index} style={styles.pricingRow}>
-              <Text style={styles.pricingLabel}>{upgrade.name}</Text>
-              <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
+          {travelCost > 0 && (
+            <View style={styles.pricingRow}>
+              <Text style={styles.pricingLabel}>Anfahrtskosten</Text>
+              <Text style={styles.pricingValue}>{formatCurrency(travelCost)}</Text>
             </View>
-          ))}
+          )}
           <View style={styles.pricingDivider} />
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>Netto</Text>
+            <Text style={styles.pricingLabel}>Netto Gesamt</Text>
             <Text style={styles.pricingValue}>{data.pricing.netPrice}</Text>
           </View>
           <View style={styles.pricingRow}>
-            <Text style={styles.pricingLabel}>zzgl. 19% MwSt.</Text>
+            <Text style={styles.pricingLabel}>MwSt. 19%</Text>
             <Text style={styles.pricingValue}>{data.pricing.vatAmount}</Text>
           </View>
           <View style={styles.pricingDivider} />
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Gesamtbetrag (brutto)</Text>
+            <Text style={styles.totalLabel}>Gesamtbetrag</Text>
             <Text style={styles.totalValue}>{data.pricing.grossPrice}</Text>
           </View>
         </View>
 
-        {/* Next Steps Section */}
         <View style={styles.nextStepsBox} wrap={false}>
-          <Text style={styles.nextStepsTitle}>So geht es weiter</Text>
+          <Text style={styles.nextStepsTitle}>Nächste Schritte</Text>
           <View style={styles.stepRow}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>1</Text>
-            </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepText}>Termin vereinbaren – flexibel nach Ihrem Zeitplan</Text>
-            </View>
+            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>1</Text></View>
+            <Text style={styles.stepText}>Terminbestätigung via E-Mail oder Telefon.</Text>
           </View>
           <View style={styles.stepRow}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>2</Text>
-            </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepText}>Professionelles Shooting vor Ort (ca. {data.project.packageDuration || '1-2h'})</Text>
-            </View>
+            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>2</Text></View>
+            <Text style={styles.stepText}>Shooting vor Ort – wir rücken Ihr Objekt ins rechte Licht.</Text>
           </View>
           <View style={styles.stepRow}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>3</Text>
-            </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepText}>Ihre Bilder erhalten Sie innerhalb von {hasExpress ? '24' : '48'} Stunden</Text>
-            </View>
+            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>3</Text></View>
+            <Text style={styles.stepText}>Bildauswahl & Erhalt der fertigen Dateien innerhalb von 48h.</Text>
           </View>
           <View style={styles.ctaBox}>
-            <Text style={styles.ctaText}>Jetzt unverbindlich Termin anfragen</Text>
-            <Text style={styles.ctaSubtext}>info@immoonpoint.de • +49 1579 2388530</Text>
+            <Text style={styles.ctaText}>Jetzt Shooting verbindlich anfragen</Text>
           </View>
         </View>
 
-        {/* Footer with page number */}
         <View style={styles.footer} fixed>
           <View style={styles.footerContent}>
             <Text style={styles.footerText}>
-              ImmoOnPoint · NPS Media GmbH · Klinkerberg 9, 86152 Augsburg · HRB 38388 · USt-IdNr.: DE359733225
+              ImmoOnPoint ist eine Marke der NPS Media GmbH · Klinkerberg 9, 86152 Augsburg{'\n'}
+              info@immoonpoint.de · Geschäftsführer: Nikolas Seymour · HRB 38388 · USt-IdNr.: DE359733225
             </Text>
-            <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
+            <Text style={{fontSize: 7, color: colors.muted}} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} / ${totalPages}`} />
           </View>
         </View>
       </Page>
