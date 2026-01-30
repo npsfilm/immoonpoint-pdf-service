@@ -19,10 +19,18 @@ const formatSalutation = (salutation: string) => {
   return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
 };
 
+// NEU: Shooting-Typ formatieren (z.B. "immobilien" → "Immobilien-Shooting")
+const formatShootingType = (type: string) => {
+  if (!type) return '';
+  const cleaned = type.replace(/-shooting$/i, '').replace(/-/g, ' ');
+  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  return `${capitalized}-Shooting`;
+};
+
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 30,      // Weniger Abstand oben
-    paddingHorizontal: 40, // Weniger Abstand an den Seiten
+    paddingTop: 30,
+    paddingHorizontal: 40,
     paddingBottom: 50,
     fontSize: 10,
     fontFamily: 'Helvetica',
@@ -36,7 +44,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: 110, // Logo kleiner gemacht
+    width: 110,
     height: 'auto',
     objectFit: 'contain',
   },
@@ -76,7 +84,6 @@ const styles = StyleSheet.create({
     color: colors.muted,
     lineHeight: 1.4,
   },
-  // Projekt-Grid
   projectCard: {
     backgroundColor: colors.lightBg,
     padding: 12,
@@ -107,7 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: 'bold',
   },
-  // Leistungen-Grid
   section: {
     marginBottom: 15,
   },
@@ -122,12 +128,12 @@ const styles = StyleSheet.create({
   },
   featuresGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap', // Ermöglicht 2 Spalten
+    flexWrap: 'wrap',
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '50%', // Genau die Hälfte der Breite
+    width: '50%',
     marginBottom: 6,
   },
   bullet: {
@@ -140,7 +146,6 @@ const styles = StyleSheet.create({
   featureText: {
     fontSize: 8.5,
   },
-  // Preis-Box
   pricingBox: {
     backgroundColor: colors.primary,
     padding: 15,
@@ -212,19 +217,21 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
   const validUntil = new Date();
   validUntil.setDate(validUntil.getDate() + 30);
   
-  const features = [
-    'Kommerzielle Nutzungsrechte',
-    'Bildoptimierung',
-    'ImmoScout Optimierung',
-    'Blaue-Himmel-Garantie',
-    'Schnelle Lieferung',
-    'High-Res Dateien'
-  ];
+  // NEU: Features aus Paketdaten oder Fallback
+  const features = data.project.packageFeatures && data.project.packageFeatures.length > 0
+    ? data.project.packageFeatures
+    : [
+        'Kommerzielle Nutzungsrechte',
+        'Bildoptimierung',
+        'ImmoScout Optimierung',
+        'Blaue-Himmel-Garantie',
+        'Schnelle Lieferung',
+        'High-Res Dateien'
+      ];
   
   const salutation = formatSalutation(data.contact.salutation);
   const packagePrice = data.pricing.packagePrice ?? data.project.packagePrice ?? 0;
   const travelCost = data.pricing.travelCost ?? 0;
-  const upgradesTotal = data.pricing.upgradesTotal ?? 0;
   const imageCount = data.project.imageCount ?? data.project.packageImages ?? 0;
 
   return (
@@ -255,11 +262,10 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </Text>
         </View>
 
-        {/* Projektdetails in 2 Spalten */}
+        {/* Projektdetails */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdetails</Text>
           <View style={styles.projectGrid}>
-            {/* Linke Spalte: 2 Items */}
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Objekt</Text>
@@ -267,10 +273,10 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
               </View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Leistung</Text>
-                <Text style={styles.projectValue}>{data.project.shootingType}</Text>
+                {/* NEU: Shooting-Typ richtig formatiert */}
+                <Text style={styles.projectValue}>{formatShootingType(data.project.shootingType)}</Text>
               </View>
             </View>
-            {/* Rechte Spalte: 3 Items */}
             <View style={styles.projectColumn}>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Paket</Text>
@@ -292,7 +298,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         </View>
 
-        {/* Inklusivleistungen in 2 Spalten */}
+        {/* Inklusivleistungen - jetzt aus Paketdaten */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inklusivleistungen</Text>
           <View style={styles.featuresGrid}>
@@ -320,19 +326,24 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </View>
         )}
 
-        {/* Preis-Box - wrap={false} verhindert das Trennen über zwei Seiten */}
+        {/* Preis-Box - NEU: Extras einzeln aufgelistet */}
         <View style={styles.pricingBox} wrap={false}>
           <Text style={styles.pricingTitle}>Ihre Investition</Text>
+          
+          {/* Paketpreis inkl. Anfahrt */}
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>{data.project.packageName} {travelCost > 0 ? '(inkl. Anfahrt)' : ''}</Text>
             <Text style={styles.pricingValue}>{formatCurrency(packagePrice + travelCost)}</Text>
           </View>
-          {upgradesTotal > 0 && (
-            <View style={styles.pricingRow}>
-              <Text style={styles.pricingLabel}>Zusatzleistungen</Text>
-              <Text style={styles.pricingValue}>{formatCurrency(upgradesTotal)}</Text>
+          
+          {/* NEU: Jedes Upgrade als einzelner Posten */}
+          {data.upgrades.map((upgrade, index) => (
+            <View key={index} style={styles.pricingRow}>
+              <Text style={styles.pricingLabel}>{upgrade.name}</Text>
+              <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
             </View>
-          )}
+          ))}
+          
           <View style={styles.pricingDivider} />
           <View style={styles.pricingRow}>
             <Text style={styles.pricingLabel}>Netto</Text>
@@ -352,8 +363,8 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            ImmoOnPoint • Professionelle Immobilienfotografie{'\n'}
-            E-Mail: info@immoonpoint.de • Web: www.immoonpoint.de • Gültig 30 Tage
+            ImmoOnPoint ist eine Marke der NPS Media GmbH · Klinkerberg 9, 86152 Augsburg · info@immoonpoint.de · +49 1579 2388530{'\n'}
+            Geschäftsführer: Nikolas Seymour · Registergericht: Augsburg HRB 38388 · USt-IdNr.: DE359733225
           </Text>
         </View>
       </Page>
