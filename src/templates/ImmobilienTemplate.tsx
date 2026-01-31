@@ -45,7 +45,6 @@ const getImageCountText = (packageName: string, packageImages?: number): string 
   return packageName;
 };
 
-
 const formatShootingType = (type: string): string => {
   if (!type) return '';
   const lower = type.toLowerCase();
@@ -133,6 +132,21 @@ const styles = StyleSheet.create({
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   totalLabel: { fontSize: 11, fontWeight: 'bold', color: colors.white },
   totalValue: { fontSize: 14, fontWeight: 'bold', color: colors.white },
+  // NEU: Styles für Upgrade-Hinweise
+  upgradeNote: {
+    marginTop: 2,
+    marginBottom: 6,
+    marginLeft: 8,
+    paddingLeft: 8,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255,255,255,0.3)',
+  },
+  upgradeNoteText: {
+    fontSize: 7,
+    color: 'rgba(255,255,255,0.7)',
+    fontStyle: 'italic',
+    lineHeight: 1.3,
+  },
   footer: {
     position: 'absolute',
     bottom: 30,
@@ -205,7 +219,6 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           <Text style={styles.greetingText}>
             {fullSalutation} {data.contact.lastName},
           </Text>
-          {/* Ein leerer Text-Block oder ein Margin sorgt für den Zeilenumbruch/Abstand */}
           <View style={{ marginBottom: 8 }} /> 
           <Text style={styles.greetingText}>
             vielen Dank für Ihre Kalkulation über unseren Online-Preisrechner.
@@ -215,7 +228,7 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
           </Text>
         </View>
 
-        {/* Projektdaten - KORRIGIERT */}
+        {/* Projektdaten */}
         <View style={styles.projectCard}>
           <Text style={styles.projectTitle}>Projektdaten im Überblick</Text>
           <View style={styles.projectGrid}>
@@ -230,10 +243,10 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
               </View>
             </View>
             <View style={styles.projectColumn}>
-             <View style={styles.projectItem}>
-  <Text style={styles.projectLabel}>Leistungsumfang</Text>
-  <Text style={styles.projectValue}>{portfolioText}</Text>
-</View>
+              <View style={styles.projectItem}>
+                <Text style={styles.projectLabel}>Leistungsumfang</Text>
+                <Text style={styles.projectValue}>{portfolioText}</Text>
+              </View>
               <View style={styles.projectItem}>
                 <Text style={styles.projectLabel}>Geplante Dauer</Text>
                 <Text style={styles.projectValue}>{data.project.packageDuration || 'ca. 1.5 Std.'}</Text>
@@ -269,10 +282,21 @@ export const ImmobilienTemplate: React.FC<Props> = ({ data }) => {
             <Text style={styles.pricingValue}>{formatCurrency(combinedPackagePrice)}</Text>
           </View>
           
+          {/* AKTUALISIERT: Upgrades mit optionalem Hinweis (z.B. Blaue Stunde) */}
           {data.upgrades?.map((upgrade, index) => (
-            <View key={index} style={styles.pricingRow}>
-              <Text style={styles.pricingLabel}>{upgrade.name}</Text>
-              <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
+            <View key={index}>
+              <View style={styles.pricingRow}>
+                <Text style={styles.pricingLabel}>{upgrade.name}</Text>
+                <Text style={styles.pricingValue}>{formatCurrency(upgrade.price)}</Text>
+              </View>
+              {/* Hinweis anzeigen wenn vorhanden (z.B. Blaue Stunde bei >30km) */}
+              {upgrade.note && (
+                <View style={styles.upgradeNote}>
+                  <Text style={styles.upgradeNoteText}>
+                    {upgrade.note}
+                  </Text>
+                </View>
+              )}
             </View>
           ))}
           
